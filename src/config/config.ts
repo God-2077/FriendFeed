@@ -4,6 +4,7 @@ export interface FriendLinkCrawl {
   type: 'rss' | 'html';
   html?: {
     posts: string;
+    // 以下各项基于 posts 元素的 xpath
     title: string;
     url: string;
     content?: string;
