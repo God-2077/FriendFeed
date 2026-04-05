@@ -142,59 +142,41 @@ function parseRss(xml: string): PostItem[] {
 }
 
 /**
- * 将简易 xpath 转换为 CSS 选择器
- * 支持格式:
- * - /html/body/div[2]/main -> querySelector('html body main div:nth-child(2)')
- * - div[2]/div[1] -> querySelector('div:nth-child(2) div:nth-child(1)')
- * - @href -> getAttribute('href')
- * - text() -> textContent
+ * 使用真正的 xpath 查询 DOM 节点
  */
-function xpathToSelector(xpath: string): { selector: string; isAttribute: boolean; attributeName?: string } {
-  // 处理属性选择，如 @href, @src
-  const attrMatch = xpath.match(/@(\w+)$/);
-  if (attrMatch) {
-    return {
-      selector: xpath.replace(/@\w+$/, ''),
-      isAttribute: true,
-      attributeName: attrMatch[1],
-    };
-  }
-
-  // 处理 text() 选择器
-  if (xpath.endsWith('/text()')) {
-    return {
-      selector: xpath.replace(/\/text\(\)$/, ''),
-      isAttribute: false,
-    };
-  }
-
-  return { selector: xpath, isAttribute: false };
+function evaluateXPath(xpath: string, contextNode: Node): Node | null {
+  const result = document.evaluate(xpath, contextNode, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+  return result.singleNodeValue;
 }
 
 /**
- * 转换 xpath 为 DOM 选择器
- * 例如: "/html/body/div[2]/main/div/div[2]/div[2]/div[1]" 
- * 转换为: "html body main div:nth-child(2) div:nth-child(2) div:nth-child(1)"
+ * 使用真正的 xpath 查询多个 DOM 节点
  */
-function convertXpathToCss(xpath: string): string {
-  const parts = xpath.split('/').filter(Boolean);
-  
-  return parts.map((part, index) => {
-    // 跳过根路径 /
-    if (index === 0 && part === '') return '';
-    
-    // 处理带索引的选择器，如 div[2]
-    const match = part.match(/^(\w+)\[(\d+)\]$/);
-    if (match) {
-      return `${match[1]}:nth-child(${match[2]})`;
-    }
-    
-    // 普通标签选择器
-    return part;
-  }).join(' ')
-    .replace(/^\\s+/, '')
-    .replace(/\\s+/g, ' ')
-    .trim();
+function evaluateXPathAll(xpath: string, contextNode: Node): Node[] {
+  const result = document.evaluate(xpath, contextNode, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
+  const nodes: Node[] = [];
+  let node = result.iterateNext();
+  while (node) {
+    nodes.push(node);
+    node = result.iterateNext();
+  }
+  return nodes;
+}
+
+/**
+ * 从节点获取文本内容
+ */
+function getNodeText(node: Node | null): string {
+  if (!node) return '';
+  return node.textContent?.trim() || '';
+}
+
+/**
+ * 从节点获取属性值
+ */
+function getNodeAttribute(node: Node | null, attr: string): string {
+  if (!node || !(node instanceof Element)) return '';
+  return node.getAttribute(attr) || '';
 }
 
 interface HtmlCrawlConfig {
@@ -215,95 +197,68 @@ function parseHtml(html: string, htmlConfig: HtmlCrawlConfig): PostItem[] {
   const doc = parser.parseFromString(html, 'text/html');
   
   // 获取文章列表容器
-  const postsSelector = convertXpathToCss(htmlConfig.posts);
-  const postsContainer = doc.querySelector(postsSelector);
+  const postsContainer = evaluateXPath(htmlConfig.posts, doc);
   
   if (!postsContainer) {
-    console.warn('Posts container not found:', postsSelector);
+    console.warn('Posts container not found:', htmlConfig.posts);
     return [];
   }
   
-  // 获取每篇文章的容器（基于 children 或子选择器）
-  // 简化处理：假设 posts 容器下的直接子元素是文章
-  const articleElements = postsContainer.children;
+  // 获取每篇文章的容器元素
+  // 基于 posts 容器获取其直接子元素
+  const articleElements = postsContainer.childNodes;
   
   const posts: PostItem[] = [];
-  Array.from(articleElements).forEach((article, index) => {
+  Array.from(articleElements).forEach((container, index) => {
+    if (!(container instanceof Element)) return;
+    
     try {
-      // 解析 title
+      // 解析 title (基于 posts 上下文)
       let title = '';
       if (htmlConfig.title) {
-        const titleCfg = xpathToSelector(htmlConfig.title);
-        if (titleCfg.isAttribute && titleCfg.attributeName) {
-          title = article.getAttribute(titleCfg.attributeName) || '';
-        } else {
-          const titleEl = article.querySelector(titleCfg.selector);
-          title = titleEl?.textContent?.trim() || '';
-        }
+        title = getNodeText(evaluateXPath(htmlConfig.title, container));
       }
       
       // 解析 url
       let url = '';
       if (htmlConfig.url) {
-        const urlCfg = xpathToSelector(htmlConfig.url);
-        if (urlCfg.isAttribute && urlCfg.attributeName) {
-          url = article.getAttribute(urlCfg.attributeName) || '';
+        // 属性选择：@href -> 获取 container 的 href 属性
+        if (htmlConfig.url.startsWith('@')) {
+          const attrName = htmlConfig.url.slice(1);
+          url = getNodeAttribute(container, attrName);
         } else {
-          const urlEl = article.querySelector(urlCfg.selector);
-          url = urlEl?.getAttribute('href') || urlEl?.getAttribute('src') || '';
+          // xpath 选择器，获取目标的 href 属性
+          const targetNode = evaluateXPath(htmlConfig.url, container);
+          url = getNodeAttribute(targetNode, 'href');
         }
       }
       
       // 解析 content
       let content = '';
       if (htmlConfig.content) {
-        const contentCfg = xpathToSelector(htmlConfig.content);
-        if (contentCfg.isAttribute && contentCfg.attributeName) {
-          content = article.getAttribute(contentCfg.attributeName) || '';
-        } else {
-          const contentEl = article.querySelector(contentCfg.selector);
-          content = contentEl?.textContent?.trim() || '';
-        }
+        content = getNodeText(evaluateXPath(htmlConfig.content, container));
       }
       
       // 解析 date
       let date = '';
       if (htmlConfig.date) {
-        const dateCfg = xpathToSelector(htmlConfig.date);
-        if (dateCfg.isAttribute && dateCfg.attributeName) {
-          date = article.getAttribute(dateCfg.attributeName) || '';
-        } else {
-          const dateEl = article.querySelector(dateCfg.selector);
-          date = dateEl?.textContent?.trim() || '';
-        }
+        date = getNodeText(evaluateXPath(htmlConfig.date, container));
       }
       
       // 解析 tags
       let tags: string[] | undefined;
       if (htmlConfig.tags) {
-        const tagsCfg = xpathToSelector(htmlConfig.tags);
-        if (tagsCfg.isAttribute && tagsCfg.attributeName) {
-          const tagValue = article.getAttribute(tagsCfg.attributeName);
-          const splitTags = tagValue ? tagValue.split(',').map(t => t.trim()).filter((t): t is string => !!t) : undefined;
-          tags = splitTags && splitTags.length > 0 ? splitTags : undefined;
-        } else {
-          const tagEls = article.querySelectorAll(tagsCfg.selector);
-          tags = Array.from(tagEls)
-            .map(el => el.textContent?.trim())
-            .filter((t): t is string => !!t);
-        }
+        const tagNodes = evaluateXPathAll(htmlConfig.tags, container);
+        tags = tagNodes
+          .map(n => n.textContent?.trim())
+          .filter((t): t is string => !!t);
+        if (tags.length === 0) tags = undefined;
       }
       
       // 解析 categorys
       let category: string | undefined;
       if (htmlConfig.categorys) {
-        const catCfg = xpathToSelector(htmlConfig.categorys);
-        if (catCfg.isAttribute && catCfg.attributeName) {
-          category = article.getAttribute(catCfg.attributeName) || undefined;
-        } else {
-          const catEl = article.querySelector(catCfg.selector);
-          category = catEl?.textContent?.trim() || undefined;
-        }
+        category = getNodeText(evaluateXPath(htmlConfig.categorys, container)) || undefined;
       }
       
       if (title) {
