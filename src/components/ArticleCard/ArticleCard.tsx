@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 import type { PostItem } from '../../config/config';
+import { truncateText, parseDate } from '../../utils/crawler';
 
 interface ArticleCardProps {
   post: PostItem;
@@ -9,7 +10,9 @@ interface ArticleCardProps {
  * 格式化日期
  */
 const formatDate = (dateStr: string): string => {
-  const date = new Date(dateStr);
+  const date = parseDate(dateStr);
+  if (!date) return dateStr;
+  
   const options: Intl.DateTimeFormatOptions = {
     day: '2-digit',
     month: 'short',
@@ -22,6 +25,8 @@ const formatDate = (dateStr: string): string => {
  * 文章卡片组件
  */
 const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
+  const summary = truncateText(post.content, 200);
+  
   return (
     <article className="post-card">
       <div className="card-glow" />
@@ -43,7 +48,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
             </span>
           )}
         </div>
-        <p className="post-summary">{post.content}</p>
+        <p className="post-summary">{summary}</p>
         {post.tags && post.tags.length > 0 && (
           <div className="post-tags">
             {post.tags.map((tag) => (

@@ -5,3 +5,4 @@ export { default as ProfileHeader } from './ProfileHeader/ProfileHeader';
 export { default as ArticleCard } from './ArticleCard/ArticleCard';
 export { default as ArticleList } from './ArticleList/ArticleList';
 export { default as Footer } from './Footer/Footer';
+export { default as FriendLinkHeader } from './FriendLinkHeader/FriendLinkHeader';

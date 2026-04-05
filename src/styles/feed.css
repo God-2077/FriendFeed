@@ -448,6 +448,86 @@ body {
   font-size: 0.85rem;
 }
 
+/* Friend Links Bar */
+.friend-links-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+
+.friend-link-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  transition: var(--transition-smooth);
+}
+
+.friend-link-status a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.friend-link-status:hover a {
+  color: var(--accent-mint);
+}
+
+.friend-link-status .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.friend-link-status .status-dot.loading {
+  background: var(--accent-yellow);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.friend-link-status .status-dot.success {
+  background: var(--accent-mint);
+}
+
+.friend-link-status .status-dot.error {
+  background: var(--accent-pink);
+}
+
+.friend-link-status.loading {
+  border-color: rgba(247, 244, 178, 0.3);
+}
+
+.friend-link-status.success {
+  border-color: rgba(178, 247, 239, 0.3);
+}
+
+.friend-link-status.error {
+  border-color: rgba(255, 183, 178, 0.3);
+}
+
+/* Loading & Empty States */
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.loading-state i,
+.empty-state i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Articles Grid */
 .articles-grid {
   display: grid;
@@ -646,6 +726,20 @@ body {
 .copyright a:hover {
   color: var(--accent-pink);
   border-color: var(--accent-pink);
+}
+
+/* Spin animation for loading */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* --- Responsive --- */
