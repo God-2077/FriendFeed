@@ -39,6 +39,14 @@ export const friendLinks: FriendLink[] = [
       type: 'rss',
     },
   },
+  {
+    name: "Github Blog",
+    url: 'https://github.blog',
+    crawl: {
+      url: 'https://github.blog/feed/',
+      type: 'rss',
+    },
+  },
 ];
 
 // 爬虫配置
