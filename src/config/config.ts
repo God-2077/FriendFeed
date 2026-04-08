@@ -31,6 +31,14 @@ export const friendLinks: FriendLink[] = [
       type: 'rss',
     },
   },
+  {
+    name: "Ksable's 小屋",
+    url: 'https://blog.ksable.top',
+    crawl: {
+      url: 'https://blog.ksable.top/rss.xml',
+      type: 'rss',
+    },
+  },
 ];
 
 // 爬虫配置
@@ -53,6 +61,8 @@ export interface PostItem {
   path: string;
   category?: string;
   tags?: string[];
+  friendLinkName?: string;
+  friendLinkUrl?: string;
 }
 
 export interface SiteConfig {

@@ -47,6 +47,14 @@ const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
               {post.category}
             </span>
           )}
+          {post.friendLinkName && (
+            <span className="meta-item friend-link">
+              <i className="ri-link" />
+              <a href={post.friendLinkUrl} target="_blank" rel="noopener noreferrer">
+                {post.friendLinkName}
+              </a>
+            </span>
+          )}
         </div>
         <p className="post-summary">{summary}</p>
         {post.tags && post.tags.length > 0 && (

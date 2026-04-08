@@ -291,8 +291,15 @@ export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResu
       const xml = await fetchWithCros(crawlUrl);
       const posts = parseRss(xml);
       
+      // 为每篇文章添加友站信息
+      const postsWithFriendLink = posts.map(post => ({
+        ...post,
+        friendLinkName: friendLink.name,
+        friendLinkUrl: friendLink.url
+      }));
+      
       // 按发布时间倒序排序
-      posts.sort((a, b) => {
+      postsWithFriendLink.sort((a, b) => {
         const dateA = parseDate(a.date);
         const dateB = parseDate(b.date);
         if (!dateA && !dateB) return 0;
@@ -301,7 +308,7 @@ export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResu
         return dateB.getTime() - dateA.getTime();
       });
 
-      return { posts, status: 'success' };
+      return { posts: postsWithFriendLink, status: 'success' };
     }
     
     if (friendLink.crawl.type === 'html') {
@@ -312,8 +319,15 @@ export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResu
       const html = await fetchWithCros(crawlUrl);
       const posts = parseHtml(html, friendLink.crawl.html);
       
+      // 为每篇文章添加友站信息
+      const postsWithFriendLink = posts.map(post => ({
+        ...post,
+        friendLinkName: friendLink.name,
+        friendLinkUrl: friendLink.url
+      }));
+      
       // 按发布时间倒序排序
-      posts.sort((a, b) => {
+      postsWithFriendLink.sort((a, b) => {
         const dateA = parseDate(a.date);
         const dateB = parseDate(b.date);
         if (!dateA && !dateB) return 0;
@@ -322,7 +336,7 @@ export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResu
         return dateB.getTime() - dateA.getTime();
       });
 
-      return { posts, status: 'success' };
+      return { posts: postsWithFriendLink, status: 'success' };
     }
 
     return { posts: [], status: 'error', error: 'Unsupported crawl type' };

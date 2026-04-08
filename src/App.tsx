@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Background, ProfileHeader, ArticleList, Footer } from './components';
 import { siteConfig, socialConfig, friendLinks as configFriendLinks } from './config/config';
-import { crawlAllFriendLinks, type CrawlStatus } from './utils/crawler';
+import type { CrawlStatus } from './utils/crawler';
 import type { PostItem } from './config/config';
 import './styles/feed.css';
 
@@ -33,17 +33,34 @@ function App() {
       setFriendLinkStatuses(initialStatuses);
 
       try {
-        // 爬取所有友站文章
-        const crawledPosts = await crawlAllFriendLinks(configFriendLinks);
-        setPosts(crawledPosts);
+        // 爬取每个友站的文章
+        const results = await Promise.all(configFriendLinks.map(friendLink => {
+          return import('./utils/crawler').then(({ crawlFriendLink }) => crawlFriendLink(friendLink));
+        }));
 
-        // 更新友站状态为成功
-        const successStatuses: FriendLinkStatus[] = configFriendLinks.map((fl) => ({
+        // 合并所有文章
+        const allPosts: PostItem[] = [];
+        results.forEach(result => {
+          allPosts.push(...result.posts);
+        });
+
+        // 按发布时间倒序排序
+        allPosts.sort((a, b) => {
+          const dateA = new Date(a.date).getTime();
+          const dateB = new Date(b.date).getTime();
+          return dateB - dateA;
+        });
+
+        setPosts(allPosts);
+
+        // 更新友站状态
+        const updatedStatuses: FriendLinkStatus[] = configFriendLinks.map((fl, index) => ({
           name: fl.name,
           url: fl.url,
-          status: 'success' as CrawlStatus,
+          status: results[index].status,
+          error: results[index].error,
         }));
-        setFriendLinkStatuses(successStatuses);
+        setFriendLinkStatuses(updatedStatuses);
       } catch (error) {
         // 更新友站状态为失败
         const errorStatuses: FriendLinkStatus[] = configFriendLinks.map((fl) => ({

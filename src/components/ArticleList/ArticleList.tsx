@@ -46,6 +46,9 @@ const ArticleList: FC<ArticleListProps> = ({ posts, desc, friendLinksStatus, isL
                 >
                   {link.name}
                 </a>
+                {link.status === 'error' && link.error && (
+                  <span className="error-message">({link.error})</span>
+                )}
               </span>
             ))}
           </div>
