@@ -88,6 +88,7 @@ export interface SocialConfig {
 export interface PostsConfig {
   desc: string;
   content: PostItem[];
+  maxCount: number;
 }
 
 // 网站配置
@@ -113,6 +114,7 @@ export const socialConfig: SocialConfig = {
 export const postsConfig: PostsConfig = {
   desc: 'WA 的一声就哭了',
   content: [],
+  maxCount: 20,
 };
 
 // 完整配置对象

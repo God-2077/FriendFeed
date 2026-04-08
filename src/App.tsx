@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Background, ProfileHeader, ArticleList, Footer } from './components';
-import { siteConfig, socialConfig, friendLinks as configFriendLinks } from './config/config';
+import { siteConfig, socialConfig, friendLinks as configFriendLinks, postsConfig } from './config/config';
 import type { CrawlStatus } from './utils/crawler';
 import type { PostItem } from './config/config';
 import './styles/feed.css';
@@ -51,7 +51,9 @@ function App() {
           return dateB - dateA;
         });
 
-        setPosts(allPosts);
+        // Apply max count limit
+        const limitedPosts = allPosts.slice(0, postsConfig.maxCount);
+        setPosts(limitedPosts);
 
         // 更新友站状态
         const updatedStatuses: FriendLinkStatus[] = configFriendLinks.map((fl, index) => ({
