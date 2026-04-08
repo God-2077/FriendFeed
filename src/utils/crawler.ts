@@ -308,6 +308,10 @@ export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResu
         return dateB.getTime() - dateA.getTime();
       });
 
+      if (postsWithFriendLink.length === 0) {
+        return { posts: [], status: 'error', error: 'No posts found' };
+      }
+
       return { posts: postsWithFriendLink, status: 'success' };
     }
     
@@ -335,6 +339,10 @@ export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResu
         if (!dateB) return -1;
         return dateB.getTime() - dateA.getTime();
       });
+
+      if (postsWithFriendLink.length === 0) {
+        return { posts: [], status: 'error', error: 'No posts found' };
+      }
 
       return { posts: postsWithFriendLink, status: 'success' };
     }
