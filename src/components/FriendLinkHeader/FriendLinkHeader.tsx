@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import type { FriendLink } from '../../config/config';
 import type { CrawlStatus } from '../../utils/crawler';
+import { RiLoader4Line, RiCheckboxCircleFill, RiErrorWarningFill, RiQuestionMark } from '@remixicon/react';
 
 interface FriendLinkStatus {
   friendLink: FriendLink;
@@ -19,13 +20,13 @@ const FriendLinkHeader: FC<FriendLinkHeaderProps> = ({ links }) => {
   const getStatusIcon = (status: CrawlStatus) => {
     switch (status) {
       case 'loading':
-        return 'ri-loader-4-line';
+        return RiLoader4Line;
       case 'success':
-        return 'ri-checkbox-circle-fill';
+        return RiCheckboxCircleFill;
       case 'error':
-        return 'ri-error-warning-fill';
+        return RiErrorWarningFill;
       default:
-        return 'ri-question-mark';
+        return RiQuestionMark;
     }
   };
 
@@ -71,9 +72,18 @@ const FriendLinkHeader: FC<FriendLinkHeaderProps> = ({ links }) => {
             rel="noopener noreferrer"
             title={link.error || `${link.friendLink.name}: ${getStatusText(link.status)}`}
           >
-            <span className={`status-icon ${getStatusIcon(link.status)}`}>
-              {link.status === 'loading' && <span className="spin" />}
-            </span>
+            {(() => {
+              const IconComponent = getStatusIcon(link.status);
+              return (
+                <span className="status-icon">
+                  <IconComponent 
+                    size={14} 
+                    color="currentColor" 
+                    className={link.status === 'loading' ? 'spin' : ''} 
+                  />
+                </span>
+              );
+            })()}
             <span className="link-name">{link.friendLink.name}</span>
           </a>
         ))}

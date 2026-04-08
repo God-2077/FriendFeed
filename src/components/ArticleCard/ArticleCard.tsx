@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 import type { PostItem } from '../../config/config';
 import { truncateText, parseDate } from '../../utils/crawler';
+import { RiCalendar2Line, RiFolderLine, RiLink, RiPriceTag3Line, RiArrowRightSLine } from '@remixicon/react';
 
 interface ArticleCardProps {
   post: PostItem;
@@ -38,18 +39,18 @@ const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
         </h3>
         <div className="post-meta">
           <span className="meta-item date">
-            <i className="ri-calendar-2-line" />
+            <RiCalendar2Line size={16} color="currentColor" />
             {formatDate(post.date)}
           </span>
           {post.category && (
             <span className="meta-item category">
-              <i className="ri-folder-line" />
+              <RiFolderLine size={16} color="currentColor" />
               {post.category}
             </span>
           )}
           {post.friendLinkName && (
             <span className="meta-item friend-link">
-              <i className="ri-link" />
+              <RiLink size={16} color="currentColor" />
               <a href={post.friendLinkUrl} target="_blank" rel="noopener noreferrer">
                 {post.friendLinkName}
               </a>
@@ -61,7 +62,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
           <div className="post-tags">
             {post.tags.map((tag) => (
               <span key={tag} className="tag-badge">
-                <i className="ri-price-tag-3-line" />
+                <RiPriceTag3Line size={14} color="currentColor" />
                 {tag}
               </span>
             ))}
@@ -70,7 +71,7 @@ const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
       </div>
       <div className="post-footer">
         <a className="read-more" target="_blank" rel="noopener noreferrer" href={post.path}>
-          阅读全文 <i className="ri-arrow-right-s-line" />
+          阅读全文 <RiArrowRightSLine size={14} color="currentColor" />
         </a>
       </div>
     </article>

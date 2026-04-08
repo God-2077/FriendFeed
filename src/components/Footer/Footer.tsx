@@ -1,4 +1,5 @@
 import type { FC } from 'react';
+import { RiHeart3Fill } from '@remixicon/react';
 
 interface FooterProps {
   author?: string;
@@ -11,7 +12,7 @@ const Footer: FC<FooterProps> = ({ author = '余弦' }) => {
   return (
     <footer className="page-footer">
       <p>
-        Designed with <i className="ri-heart-3-fill heart-beat" /> by {author}
+        Designed with <RiHeart3Fill size={16} color="currentColor" className="heart-beat" /> by {author}
       </p>
       <p className="copyright">
         <a href="https://aboutfeeds.com" target="_blank" rel="noopener noreferrer">

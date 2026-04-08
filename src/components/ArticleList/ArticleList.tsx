@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import type { PostItem } from '../../config/config';
 import type { CrawlStatus } from '../../utils/crawler';
 import ArticleCard from '../ArticleCard/ArticleCard';
+import { RiSparklingFill, RiLoader4Line } from '@remixicon/react';
 
 interface FriendLinkStatus {
   name: string;
@@ -25,7 +26,7 @@ const ArticleList: FC<ArticleListProps> = ({ posts, desc, friendLinksStatus, isL
     <main className="feed-content">
       <div className="content-header">
         <h2>
-          <i className="ri-sparkling-fill" /> 最近更新
+          <RiSparklingFill size={20} color="currentColor" /> 最近更新
         </h2>
         <p className="feed-desc">{desc}</p>
         
@@ -57,7 +58,7 @@ const ArticleList: FC<ArticleListProps> = ({ posts, desc, friendLinksStatus, isL
       
       {isLoading && posts.length === 0 && (
         <div className="loading-state">
-          <i className="ri-loader-4-line spin" />
+          <RiLoader4Line size={24} color="currentColor" className="spin" />
           <p>正在加载文章...</p>
         </div>
       )}
