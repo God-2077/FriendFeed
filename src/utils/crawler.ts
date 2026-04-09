@@ -95,11 +95,15 @@ export function truncateText(text: string, maxLength: number = 200): string {
  */
 async function fetchWithCros(url: string): Promise<string> {
   const proxyUrl = crawlConfig.crosAPI.replace('{url}', encodeURIComponent(url));
-  const response = await fetch(proxyUrl);
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status}`);
+  try {
+    const response = await fetch(proxyUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.text();
+  } catch (error) {
+    throw error;
   }
-  return response.text();
 }
 
 /**
@@ -141,44 +145,6 @@ function parseRss(xml: string): PostItem[] {
   return posts;
 }
 
-/**
- * 使用真正的 xpath 查询 DOM 节点
- */
-function evaluateXPath(xpath: string, contextNode: Node): Node | null {
-  const result = document.evaluate(xpath, contextNode, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-  return result.singleNodeValue;
-}
-
-/**
- * 使用真正的 xpath 查询多个 DOM 节点
- */
-function evaluateXPathAll(xpath: string, contextNode: Node): Node[] {
-  const result = document.evaluate(xpath, contextNode, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE, null);
-  const nodes: Node[] = [];
-  let node = result.iterateNext();
-  while (node) {
-    nodes.push(node);
-    node = result.iterateNext();
-  }
-  return nodes;
-}
-
-/**
- * 从节点获取文本内容
- */
-function getNodeText(node: Node | null): string {
-  if (!node) return '';
-  return node.textContent?.trim() || '';
-}
-
-/**
- * 从节点获取属性值
- */
-function getNodeAttribute(node: Node | null, attr: string): string {
-  if (!node || !(node instanceof Element)) return '';
-  return node.getAttribute(attr) || '';
-}
-
 interface HtmlCrawlConfig {
   posts: string;
   title: string;
@@ -192,92 +158,8 @@ interface HtmlCrawlConfig {
 /**
  * 解析 HTML 为文章列表（基于 xpath 配置）
  */
-function parseHtml(html: string, htmlConfig: HtmlCrawlConfig): PostItem[] {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(html, 'text/html');
-  
-  // 获取文章列表容器
-  const postsContainer = evaluateXPath(htmlConfig.posts, doc);
-  
-  if (!postsContainer) {
-    console.warn('Posts container not found:', htmlConfig.posts);
-    return [];
-  }
-  
-  // 获取每篇文章的容器元素
-  // 基于 posts 容器获取其直接子元素
-  const articleElements = postsContainer.childNodes;
-  
-  const posts: PostItem[] = [];
-  Array.from(articleElements).forEach((container, index) => {
-    if (!(container instanceof Element)) return;
-    
-    try {
-      // 解析 title (基于 posts 上下文)
-      let title = '';
-      if (htmlConfig.title) {
-        title = getNodeText(evaluateXPath(htmlConfig.title, container));
-      }
-      
-      // 解析 url
-      let url = '';
-      if (htmlConfig.url) {
-        // 属性选择：@href -> 获取 container 的 href 属性
-        if (htmlConfig.url.startsWith('@')) {
-          const attrName = htmlConfig.url.slice(1);
-          url = getNodeAttribute(container, attrName);
-        } else {
-          // xpath 选择器，获取目标的 href 属性
-          const targetNode = evaluateXPath(htmlConfig.url, container);
-          url = getNodeAttribute(targetNode, 'href');
-        }
-      }
-      
-      // 解析 content
-      let content = '';
-      if (htmlConfig.content) {
-        content = getNodeText(evaluateXPath(htmlConfig.content, container));
-      }
-      
-      // 解析 date
-      let date = '';
-      if (htmlConfig.date) {
-        date = getNodeText(evaluateXPath(htmlConfig.date, container));
-      }
-      
-      // 解析 tags
-      let tags: string[] | undefined;
-      if (htmlConfig.tags) {
-        const tagNodes = evaluateXPathAll(htmlConfig.tags, container);
-        tags = tagNodes
-          .map(n => n.textContent?.trim())
-          .filter((t): t is string => !!t);
-        if (tags.length === 0) tags = undefined;
-      }
-      
-      // 解析 categorys
-      let category: string | undefined;
-      if (htmlConfig.categorys) {
-        category = getNodeText(evaluateXPath(htmlConfig.categorys, container)) || undefined;
-      }
-      
-      if (title) {
-        posts.push({
-          id: `html-${index}-${Date.now()}`,
-          title,
-          content,
-          date,
-          path: url,
-          tags,
-          category,
-        });
-      }
-    } catch (e) {
-      console.warn('Failed to parse article:', index, e);
-    }
-  });
-  
-  return posts;
+function parseHtml(_html: string, _htmlConfig: HtmlCrawlConfig): PostItem[] {
+  throw new Error('HTML crawling feature is under development');
 }
 
 /**
