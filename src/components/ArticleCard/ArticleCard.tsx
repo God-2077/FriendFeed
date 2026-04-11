@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import type { PostItem } from '../../config/type';
-import { truncateText, parseDate } from '../../utils/crawler';
+import { truncateText, parseDate } from '../../utils/utils';
 import { RiCalendar2Line, RiFolderLine, RiLink, RiPriceTag3Line, RiArrowRightSLine } from '@remixicon/react';
 
 interface ArticleCardProps {
