@@ -151,6 +151,7 @@ export const postsConfig: PostsConfig = {
   desc: 'WA 的一声就哭了',
   content: [],
   maxCount: 20,
+  summaryLength: 200,
 };
 
 // 完整配置对象

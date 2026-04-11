@@ -56,4 +56,5 @@ export interface PostsConfig {
   desc: string;
   content: PostItem[];
   maxCount: number;
+  summaryLength: number;
 }

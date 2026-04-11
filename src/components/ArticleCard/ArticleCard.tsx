@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import type { PostItem } from '../../config/type';
 import { truncateText, parseDate } from '../../utils/utils';
 import { RiCalendar2Line, RiFolderLine, RiLink, RiPriceTag3Line, RiArrowRightSLine } from '@remixicon/react';
+import config from '../../config/config';
 
 interface ArticleCardProps {
   post: PostItem;
@@ -26,7 +27,7 @@ const formatDate = (dateStr: string): string => {
  * 文章卡片组件
  */
 const ArticleCard: FC<ArticleCardProps> = ({ post }) => {
-  const summary = truncateText(post.content, 200);
+  const summary = truncateText(post.content, config.posts.summaryLength);
   
   return (
     <article className="post-card">
