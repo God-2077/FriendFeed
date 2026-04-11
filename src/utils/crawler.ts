@@ -95,15 +95,11 @@ export function truncateText(text: string, maxLength: number = 200): string {
  */
 async function fetchWithCros(url: string): Promise<string> {
   const proxyUrl = crawlConfig.crosAPI.replace('{url}', encodeURIComponent(url));
-  try {
     const response = await fetch(proxyUrl);
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
     return response.text();
-  } catch (error) {
-    throw error;
-  }
 }
 
 /**
