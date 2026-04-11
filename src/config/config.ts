@@ -134,6 +134,7 @@ export const friendLinks: FriendLink[] = [
 // 爬虫配置
 export const crawlConfig = {
   crosAPI: 'https://cros-api.rowwus.eu.org/?{url}',
+  timeout:8000, // 超时时间，单位毫秒
 };
 
 
