@@ -141,17 +141,17 @@ export const crawlConfig = {
 export const socialConfig: SocialConfig = {
   links: [
     { type: 'github', url: 'https://github.com/God-2077', label: 'Github' },
-    { type: 'email', url: 'mailto:cos@koharu.top', label: 'Email' },
-    { type: 'rss', url: '/rss.xml', label: 'Rss' },
+    { type: 'email', url: 'mailto:kissablecho@qq.com', label: 'Email' },
+    { type: 'rss', url: siteConfig.baseUrl + 'rss.xml', label: 'Rss' },
   ],
 };
 
 
 // 文章列表配置（初始为空，由浏览器端动态获取）
 export const postsConfig: PostsConfig = {
-  desc: '友链文章聚合，按发布时间倒序排序，最多显示 20 篇文章',
+  desc: '友链文章聚合，按发布时间倒序排序',
   content: [],
-  maxCount: 20,
+  maxCount: 30,
   summaryLength: 200,
 };
 
