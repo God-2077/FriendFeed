@@ -122,11 +122,11 @@ export async function crawlAllFriendLinks(friendLinks: FriendLink[]): Promise<Po
  */
 async function fetchWithCros(url: string): Promise<string> {
   const proxyUrl = crawlConfig.crosAPI.replace('{url}', encodeURIComponent(url));
-    const response = await axios.get(proxyUrl, { timeout: crawlConfig.timeout });
-    if (response.status < 200 || response.status >= 300) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-    return response.data;
+  const response = await axios.get(proxyUrl, { timeout: crawlConfig.timeout });
+  if (response.status !== 200) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.data;
 }
 
 /**

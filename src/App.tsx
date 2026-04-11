@@ -3,6 +3,7 @@ import { Background, ProfileHeader, ArticleList, Footer } from './components';
 import { siteConfig, socialConfig, friendLinks as configFriendLinks, postsConfig } from './config/config';
 import type { CrawlStatus } from './utils/crawler';
 import type { PostItem } from './config/type';
+import { parseDate } from './utils/utils';
 import './styles/feed.css';
 
 interface FriendLinkStatus {
@@ -46,9 +47,12 @@ function App() {
 
         // 按发布时间倒序排序
         allPosts.sort((a, b) => {
-          const dateA = new Date(a.date).getTime();
-          const dateB = new Date(b.date).getTime();
-          return dateB - dateA;
+          const dateA = parseDate(a.date);
+          const dateB = parseDate(b.date);
+          if (!dateA && !dateB) return 0;
+          if (!dateA) return 1;
+          if (!dateB) return -1;
+          return dateB.getTime() - dateA.getTime();
         });
 
         // Apply max count limit
