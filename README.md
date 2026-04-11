@@ -242,4 +242,6 @@ A: 可以将 `pnpm build` 生成的 `dist` 目录部署到任何静态网站托�
 
 ## 许可证
 
-MIT License
+本项目基于 **AGPL-3.0** 协议开源。
+
+其中样式参考并衍生自 [cosZone/astro-koharu](https://github.com/cosZone/astro-koharu)，原项目协议为 AGPL-3.0。
