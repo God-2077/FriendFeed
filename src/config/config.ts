@@ -8,8 +8,9 @@ import type {
 // 网站配置
 export const siteConfig: SiteConfig = {
   title: 'Ksable\'s 小屋',
-  subtitle: 'WA 的一声就哭了',
-  bio: "一个记录生活，分享技术的博客",
+  author: 'kissablecho',
+  subtitle: '一个记录生活，分享技术的博客',
+  bio: "kissablecho 的个人博客 / 记录生活，分享技术 / 喜欢二次元和白丝。",
   avatar: 'https://assets.ksable.top/me/gravatar.jpg',
   baseUrl: 'https://blog.ksable.top/',
 };
@@ -148,7 +149,7 @@ export const socialConfig: SocialConfig = {
 
 // 文章列表配置（初始为空，由浏览器端动态获取）
 export const postsConfig: PostsConfig = {
-  desc: 'WA 的一声就哭了',
+  desc: '友链文章聚合，按发布时间倒序排序，最多显示 20 篇文章',
   content: [],
   maxCount: 20,
   summaryLength: 200,
