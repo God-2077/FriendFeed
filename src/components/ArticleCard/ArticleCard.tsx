@@ -20,7 +20,7 @@ const formatDate = (dateStr: string): string => {
     month: 'short',
     year: 'numeric',
   };
-  return date.toLocaleDateString('en-US', options);
+  return date.toLocaleDateString('zh-CN', options);
 };
 
 /**
