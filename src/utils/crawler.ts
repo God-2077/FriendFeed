@@ -1,6 +1,7 @@
 // 导入工具函数
 import { parseDate } from './utils';
 import { crawlConfig } from '../config/config';
+import type { FriendLink, PostItem } from '../config/type';
 
 
 /**
@@ -9,7 +10,7 @@ import { crawlConfig } from '../config/config';
 export type CrawlStatus = 'loading' | 'success' | 'error';
 
 export interface CrawlResult {
-  posts: import('../config/type').PostItem[];
+  posts: PostItem[];
   status: CrawlStatus;
   error?: string;
 }
@@ -17,7 +18,7 @@ export interface CrawlResult {
 /**
  * 爬取单个友站文章
  */
-export async function crawlFriendLink(friendLink: import('../config/type').FriendLink): Promise<CrawlResult> {
+export async function crawlFriendLink(friendLink: FriendLink): Promise<CrawlResult> {
   try {
     const crawlUrl = friendLink.crawl.url;
     
@@ -94,11 +95,11 @@ export async function crawlFriendLink(friendLink: import('../config/type').Frien
 /**
  * 爬取所有友站文章
  */
-export async function crawlAllFriendLinks(friendLinks: import('../config/type').FriendLink[]): Promise<import('../config/type').PostItem[]> {
+export async function crawlAllFriendLinks(friendLinks: FriendLink[]): Promise<PostItem[]> {
   const results = await Promise.all(friendLinks.map(crawlFriendLink));
   
   // 合并所有文章
-  const allPosts: import('../config/type').PostItem[] = [];
+  const allPosts: PostItem[] = [];
   results.forEach(result => {
     allPosts.push(...result.posts);
   });
@@ -131,12 +132,12 @@ async function fetchWithCros(url: string): Promise<string> {
 /**
  * 解析 RSS XML 为文章列表
  */
-function parseRss(xml: string): import('../config/type').PostItem[] {
+function parseRss(xml: string): PostItem[] {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xml, 'text/xml');
   const items = doc.querySelectorAll('item');
   
-  const posts: import('../config/type').PostItem[] = [];
+  const posts: PostItem[] = [];
   items.forEach((item, index) => {
     const title = item.querySelector('title')?.textContent?.trim() || '';
     const link = item.querySelector('link')?.textContent?.trim() || '';
@@ -180,6 +181,6 @@ interface HtmlCrawlConfig {
 /**
  * 解析 HTML 为文章列表（基于 xpath 配置）
  */
-function parseHtml(_html: string, _htmlConfig: HtmlCrawlConfig): import('../config/type').PostItem[] {
+function parseHtml(_html: string, _htmlConfig: HtmlCrawlConfig): PostItem[] {
   throw new Error('HTML crawling feature is under development');
 }
