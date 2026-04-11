@@ -1,4 +1,4 @@
-import type { FriendLink, PostItem } from '../config/config';
+import type { FriendLink, PostItem } from '../config/type';
 import { crawlConfig } from '../config/config';
 
 /** 友站爬取状态 */

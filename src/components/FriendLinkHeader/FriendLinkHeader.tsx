@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { FriendLink } from '../../config/config';
+import type { FriendLink } from '../../config/type';
 import type { CrawlStatus } from '../../utils/crawler';
 import { RiLoader4Line, RiCheckboxCircleFill, RiErrorWarningFill, RiQuestionMark } from '@remixicon/react';
 

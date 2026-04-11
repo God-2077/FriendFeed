@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { PostItem } from '../../config/config';
+import type { PostItem } from '../../config/type';
 import { truncateText, parseDate } from '../../utils/crawler';
 import { RiCalendar2Line, RiFolderLine, RiLink, RiPriceTag3Line, RiArrowRightSLine } from '@remixicon/react';
 

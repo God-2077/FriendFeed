@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Background, ProfileHeader, ArticleList, Footer } from './components';
 import { siteConfig, socialConfig, friendLinks as configFriendLinks, postsConfig } from './config/config';
 import type { CrawlStatus } from './utils/crawler';
-import type { PostItem } from './config/config';
+import type { PostItem } from './config/type';
 import './styles/feed.css';
 
 interface FriendLinkStatus {

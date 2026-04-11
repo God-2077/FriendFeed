@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { SocialLink } from '../../config/config';
+import type { SocialLink } from '../../config/type';
 import { RiGithubFill, RiMailLine, RiRssLine, RiBilibiliLine, RiTwitterXFill, RiLinksLine, RiLink } from '@remixicon/react';
 
 interface SocialLinksProps {

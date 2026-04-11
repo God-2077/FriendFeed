@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { SiteConfig, SocialLink } from '../../config/config';
+import type { SiteConfig, SocialLink } from '../../config/type';
 import SocialLinks from '../SocialLinks/SocialLinks';
 import { RiRssFill, RiArrowRightLine } from '@remixicon/react';
 
