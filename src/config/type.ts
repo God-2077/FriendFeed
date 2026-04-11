@@ -42,6 +42,7 @@ export interface PostItem {
 
 export interface SiteConfig {
   title: string;
+  author: string;
   subtitle: string;
   bio: string;
   avatar: string;

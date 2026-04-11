@@ -90,11 +90,11 @@ function App() {
         />
         <ArticleList 
           posts={posts} 
-          desc="WA 的一声就哭了"
+          desc={postsConfig.desc}
           friendLinksStatus={friendLinkStatuses}
           isLoading={isLoading}
         />
-        <Footer author="余弦" />
+        <Footer author={siteConfig.author} />
       </div>
     </>
   );
