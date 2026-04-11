@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import type { PostItem } from '../../config/config';
+import type { PostItem } from '../../config/type';
 import type { CrawlStatus } from '../../utils/crawler';
 import ArticleCard from '../ArticleCard/ArticleCard';
 import { RiSparklingFill, RiLoader4Line } from '@remixicon/react';
