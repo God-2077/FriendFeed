@@ -1,6 +1,7 @@
 import type { FC } from 'react';
-import type { SiteConfig, SocialLink } from '../../config/config';
+import type { SiteConfig, SocialLink } from '../../config/type';
 import SocialLinks from '../SocialLinks/SocialLinks';
+import { RiRssFill, RiArrowRightLine } from '@remixicon/react';
 
 interface ProfileHeaderProps {
   site: SiteConfig;
@@ -31,7 +32,7 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ site, socialLinks }) => {
         
         <div className="feed-actions">
           <div className="feed-badge">
-            <i className="ri-rss-fill" />
+            <RiRssFill size={16} color="currentColor" />
             RSS Feed Preview
           </div>
           <a 
@@ -41,7 +42,7 @@ const ProfileHeader: FC<ProfileHeaderProps> = ({ site, socialLinks }) => {
             href={site.baseUrl}
           >
             访问网站 
-            <i className="ri-arrow-right-line" />
+            <RiArrowRightLine size={16} color="currentColor" />
           </a>
         </div>
       </div>

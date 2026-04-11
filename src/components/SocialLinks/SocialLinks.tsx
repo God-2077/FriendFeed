@@ -1,23 +1,24 @@
 import type { FC } from 'react';
-import type { SocialLink } from '../../config/config';
+import type { SocialLink } from '../../config/type';
+import { RiGithubFill, RiMailLine, RiRssLine, RiBilibiliLine, RiTwitterXFill, RiLinksLine, RiLink } from '@remixicon/react';
 
 interface SocialLinksProps {
   links: SocialLink[];
 }
 
 /**
- * 获取社交链接图标类名
+ * 获取社交链接图标组件
  */
-const getIconClass = (type: SocialLink['type']): string => {
-  const iconMap: Record<SocialLink['type'], string> = {
-    github: 'ri-github-fill',
-    email: 'ri-mail-line',
-    rss: 'ri-rss-line',
-    bilibili: 'ri-bilibili-line',
-    twitter: 'ri-twitter-x-fill',
-    custom: 'ri-links-line',
+const getIconComponent = (type: SocialLink['type']) => {
+  const iconMap: Record<SocialLink['type'], React.ElementType> = {
+    github: RiGithubFill,
+    email: RiMailLine,
+    rss: RiRssLine,
+    bilibili: RiBilibiliLine,
+    twitter: RiTwitterXFill,
+    custom: RiLinksLine,
   };
-  return iconMap[type] || 'ri-link';
+  return iconMap[type] || RiLink;
 };
 
 /**
@@ -36,7 +37,10 @@ const SocialLinks: FC<SocialLinksProps> = ({ links }) => {
           title={link.label}
           aria-label={link.label}
         >
-          <i className={getIconClass(link.type)} />
+          {(() => {
+            const IconComponent = getIconComponent(link.type);
+            return <IconComponent size={20} color="currentColor" />;
+          })()}
         </a>
       ))}
     </div>

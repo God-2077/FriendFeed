@@ -1,100 +1,159 @@
-// 友站爬虫配置
-export interface FriendLinkCrawl {
-  url: string;
-  type: 'rss' | 'html';
-  html?: {
-    posts: string;
-    // 以下各项基于 posts 元素的 xpath
-    title: string;
-    url: string;
-    content?: string;
-    date?: string;
-    tags?: string;
-    categorys?: string;
-  };
-}
+import type {
+    FriendLink,
+    SiteConfig,
+    SocialConfig,
+    PostsConfig,
+} from './type';
 
-// 友站接口
-export interface FriendLink {
-  name: string;
-  url: string;
-  crawl: FriendLinkCrawl;
-}
+// 网站配置
+export const siteConfig: SiteConfig = {
+  title: 'Ksable\'s 小屋',
+  author: 'kissablecho',
+  subtitle: '一个记录生活，分享技术的博客',
+  bio: "kissablecho 的个人博客 / 记录生活，分享技术 / 喜欢二次元和白丝。",
+  avatar: 'https://assets.ksable.top/me/gravatar.jpg',
+  baseUrl: 'https://blog.ksable.top/',
+};
 
 // 友站
 export const friendLinks: FriendLink[] = [
+//   {
+//     name: "Ksable' 小屋",
+//     url: 'https://blog.ksable.top/',
+//     crawl: {
+//       url: 'https://blog.ksable.top/rss.xml',
+//       type: 'rss',
+//     },
+//   },
   {
-    name: '余弦の博客',
-    url: 'https://koharu.cosine.ren',
+    name: "CC米饭",
+    url: "https://www.ccrice.com",
     crawl: {
-      url: 'https://koharu.cosine.ren/rss.xml',
-      type: 'rss',
-    },
+      url: "https://world.ccrice.com/feed/",
+      type: "rss"
+    }
   },
+  {
+    name: "鸦鸦的巢穴",
+    url: "https://crowya.com",
+    crawl: {
+      url: "https://crowya.com/feed",
+      type: "rss"
+    }
+  },
+  {
+    name: "Bensz",
+    url: "https://blognas.hwb0307.com",
+    crawl: {
+      url: "https://blognas.hwb0307.com/feed/",
+      type: "rss"
+    }
+  },
+  {
+    name: "小稚生活志",
+    url: "https://ihello.cc",
+    crawl: {
+      url: "https://ihello.cc/feed",
+      type: "rss"
+    }
+  },
+  {
+    name: "Mimosa的小站",
+    url: "https://loneapex.cn/",
+    crawl: {
+      url: "https://loneapex.cn/feed",
+      type: "rss"
+    }
+  },
+  {
+    name: "湘铭`Blog",
+    url: "https://xiangming.site",
+    crawl: {
+      url: "https://xiangming.site/feed/",
+      type: "rss"
+    }
+  },
+  {
+    name: "墨希MoXiify",
+    url: "https://note.moxiify.cn/",
+    crawl: {
+      url: "https://note.moxiify.cn/feed/",
+      type: "rss"
+    }
+  },
+  {
+    name: "obaby",
+    url: "https://zhongxiaojie.cn/",
+    crawl: {
+      url: "https://zhongxiaojie.cn/feed",
+      type: "rss"
+    }
+  },
+  {
+    name: "拂晓不辍",
+    url: "https://eggk.net/",
+    crawl: {
+      url: "https://eggk.net/feed/",
+      type: "rss"
+    }
+  },
+  {
+    name: "云藉",
+    url: "https://kumosya.top/",
+    crawl: {
+      url: "https://kumosya.top/atom.xml",
+      type: "rss"
+    }
+  },
+  {
+    name: "彬红茶日记",
+    url: "https://note.redcha.cn/",
+    crawl: {
+      url: "https://note.redcha.cn/rss.xml",
+      type: "rss"
+    }
+  },
+  {
+    name: "Horean’s Blog",
+    url: "https://blog.hxrch.top",
+    crawl: {
+      url: "https://blog.hxrch.top/rss.xml",
+      type: "rss"
+    }
+  },
+  {
+    name: "傲雪の",
+    url: "https://b.oxue.de",
+    crawl: {
+      url: "https://b.oxue.de/rss.xml",
+      type: "rss"
+    }
+  }
 ];
 
 // 爬虫配置
 export const crawlConfig = {
   crosAPI: 'https://cros-api.rowwus.eu.org/?{url}',
+  timeout:8000, // 超时时间，单位毫秒
 };
 
-// 类型定义
-export interface SocialLink {
-  type: 'github' | 'email' | 'rss' | 'bilibili' | 'twitter' | 'custom';
-  url: string;
-  label: string;
-}
-
-export interface PostItem {
-  id: string;
-  title: string;
-  content: string;
-  date: string;
-  path: string;
-  category?: string;
-  tags?: string[];
-}
-
-export interface SiteConfig {
-  title: string;
-  subtitle: string;
-  bio: string;
-  avatar: string;
-  baseUrl: string;
-}
-
-export interface SocialConfig {
-  links: SocialLink[];
-}
-
-export interface PostsConfig {
-  desc: string;
-  content: PostItem[];
-}
-
-// 网站配置
-export const siteConfig: SiteConfig = {
-  title: '余弦の博客',
-  subtitle: 'WA 的一声就哭了',
-  bio: '一个基于 Astro 的现代化博客主题',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=cos&backgroundColor=b6e3f4',
-  baseUrl: 'https://koharu.cosine.ren',
-};
 
 // 社交链接配置
 export const socialConfig: SocialConfig = {
   links: [
     { type: 'github', url: 'https://github.com/God-2077', label: 'Github' },
-    { type: 'email', url: 'mailto:cos@koharu.top', label: 'Email' },
-    { type: 'rss', url: '/rss.xml', label: 'Rss' },
+    { type: 'email', url: 'mailto:kissablecho@qq.com', label: 'Email' },
+    { type: 'rss', url: siteConfig.baseUrl + 'rss.xml', label: 'Rss' },
   ],
 };
 
 
 // 文章列表配置（初始为空，由浏览器端动态获取）
 export const postsConfig: PostsConfig = {
-  desc: 'WA 的一声就哭了',
+  desc: '友链文章聚合，按发布时间倒序排序',
   content: [],
+  maxCount: 30,
+  summaryLength: 200,
 };
 
 // 完整配置对象

@@ -625,6 +625,16 @@ body {
   color: var(--accent-pink);
 }
 
+.meta-item.friend-link a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.meta-item.friend-link a:hover {
+  color: var(--accent-mint);
+}
+
 .post-summary {
   color: var(--text-muted);
   font-size: 0.9rem;
