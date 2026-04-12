@@ -1,4 +1,23 @@
-# FriendFeed - 友链文章聚合平台
+<div align="center">
+  <img src="https://socialify.git.ci/God-2077/FriendFeed/image?font=JetBrains+Mono&language=1&name=1&owner=1&pattern=Circuit+Board&theme=Auto" alt="python-code" width="640" height="320" />
+</div>
+<div align="center">
+  <a href="https://github.com/God-2077/FriendFeed/releases">
+    <img src="https://img.shields.io/github/release/God-2077/FriendFeed.svg?color=0366d6" alt="Latest Release">
+  </a>
+  <a href="https://github.com/God-2077/FriendFeed/releases">
+    <img src="https://img.shields.io/github/release-date/God-2077/FriendFeed.svg?color=28a745" alt="Release Date">
+  </a>
+  <a href="https://github.com/God-2077/FriendFeed/commits/main/">
+    <img src="https://img.shields.io/github/commit-activity/t/God-2077/FriendFeed?color=6f42c1" alt="GitHub commit activity">
+  </a>
+  <a href="https://github.com/God-2077/FriendFeed#GPL-3.0-1-ov-file">
+    <img src="https://img.shields.io/github/license/God-2077/FriendFeed?color=ff5722" alt="GitHub License">
+  </a>
+</div>
+<br />
+
+<!-- # FriendFeed - 友链文章聚合平台 -->
 
 ## 项目概述
 
