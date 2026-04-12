@@ -98,7 +98,7 @@ function App() {
           friendLinksStatus={friendLinkStatuses}
           isLoading={isLoading}
         />
-        <Footer author={siteConfig.author} />
+        <Footer />
       </div>
     </>
   );
