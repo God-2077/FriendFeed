@@ -8,7 +8,7 @@ interface FooterProps {
 /**
  * 页脚组件
  */
-const Footer: FC<FooterProps> = ({ author = '余弦' }) => {
+const Footer: FC<FooterProps> = ({ author = 'kissablecho' }) => {
   return (
     <footer className="page-footer">
       <p>
