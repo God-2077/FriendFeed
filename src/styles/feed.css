@@ -724,7 +724,7 @@ body {
   }
 }
 
-.copyright a {
+.page-footer a {
   color: var(--text-muted);
   text-decoration: none;
   border-bottom: 1px dotted var(--text-muted);
@@ -733,7 +733,7 @@ body {
   transition: color 0.2s;
 }
 
-.copyright a:hover {
+.page-footer a:hover {
   color: var(--accent-pink);
   border-color: var(--accent-pink);
 }
