@@ -1,12 +1,4 @@
----
-interface Props {
-  title: string;
-}
-
-const { title } = Astro.props;
----
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -14,14 +6,11 @@ const { title } = Astro.props;
     <meta name="description" content="Feeds - RSS Feed Preview" />
     <meta name="theme-color" content="#121214" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+
+    <title>FriendFeed - RSS Feed Preview</title>
   </head>
   <body>
-    <slot />
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
-<style is:global>
-  @import '../styles/feed.css';
-  @import '../styles/index.css';
-</style>

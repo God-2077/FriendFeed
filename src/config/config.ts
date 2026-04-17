@@ -114,7 +114,7 @@ export const friendLinks: FriendLink[] = [
     }
   },
   {
-    name: "Horean's Blog",
+    name: "Horean’s Blog",
     url: "https://blog.hxrch.top",
     crawl: {
       url: "https://blog.hxrch.top/rss.xml",
