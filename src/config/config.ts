@@ -182,6 +182,8 @@ export const config = {
   site: siteConfig,
   social: socialConfig,
   posts: postsConfig,
+  profile: profileConfig,
+  robots: robotsConfig,
 };
 
 export default config;
