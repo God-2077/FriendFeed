@@ -41,6 +41,7 @@ export interface PostItem {
 }
 
 export interface SiteConfig {
+  pageTitle: string;
   title: string;
   author: string;
   subtitle: string;

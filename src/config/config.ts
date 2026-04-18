@@ -7,6 +7,7 @@ import type {
 
 // 网站配置
 export const siteConfig: SiteConfig = {
+  pageTitle: "FriendFeed - RSS Feed Preview",
   title: 'Ksable\'s 小屋',
   author: 'kissablecho',
   subtitle: '一个记录生活，分享技术的博客',
