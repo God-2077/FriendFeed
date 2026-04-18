@@ -60,3 +60,15 @@ export interface PostsConfig {
   maxCount: number;
   summaryLength: number;
 }
+
+
+export interface RobotsConfig {
+  userAgent: string;
+  disallow?: string[];
+  allow?: string[];
+  Sitemap?: string;
+}
+
+export interface RobotsConfigList {
+  robots: RobotsConfig[];
+}

@@ -3,6 +3,7 @@ import type {
     SiteConfig,
     SocialConfig,
     PostsConfig,
+    RobotsConfigList,
 } from './type';
 
 // 网站配置
@@ -156,6 +157,18 @@ export const postsConfig: PostsConfig = {
   maxCount: 30,
   summaryLength: 200,
 };
+
+// Robots 配置
+export const robotsConfig: RobotsConfigList = {
+  robots: [
+    {
+      userAgent: '*',
+      disallow: ['/'],
+    },
+  ],
+};
+
+
 
 // 完整配置对象
 export const config = {
