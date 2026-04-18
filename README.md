@@ -23,6 +23,13 @@
 
 FriendFeed 是一个基于 Astro + React 开发的友链文章聚合平台，能够自动爬取并展示多个友链网站的最新文章，按发布时间倒序排列，为用户提供一个集中浏览友站内容的便捷方式。采用 Astro 的 Islands 架构，结合了服务端渲染的性能优势和 React 的交互能力。
 
+## 演示
+
+https://friendfeed.ksable.top/
+
+<img width="2544" height="1336" alt="screenshot-1776497461632" src="https://github.com/user-attachments/assets/b5a75194-bbd4-459a-b1ed-0133f7940f65" />
+
+
 ## 核心功能
 
 - **友链文章聚合**：自动爬取多个友站的 RSS 订阅源，聚合所有文章
