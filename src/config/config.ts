@@ -3,16 +3,26 @@ import type {
     SiteConfig,
     SocialConfig,
     PostsConfig,
+    RobotsConfigList,
+    ProfileConfig,
+    ServiceWorkerConfig,
 } from './type';
 
 // 网站配置
 export const siteConfig: SiteConfig = {
+  title: "FriendFeed - RSS Feed Preview",
+  description: "一个基于 RSS Feed 的博客，分享技术、生活、工作等。",
+  openGraphImage: 'https://assets.ksable.top/me/gravatar.jpg',
+  baseUrl: 'https://friendfeed.ksable.top/',
+};
+
+export const profileConfig: ProfileConfig = {
   title: 'Ksable\'s 小屋',
   author: 'kissablecho',
   subtitle: '一个记录生活，分享技术的博客',
   bio: "kissablecho 的个人博客 / 记录生活，分享技术 / 喜欢二次元和白丝。",
   avatar: 'https://assets.ksable.top/me/gravatar.jpg',
-  baseUrl: 'https://blog.ksable.top/',
+  url: 'https://blog.ksable.top/',
 };
 
 // 友站
@@ -156,11 +166,28 @@ export const postsConfig: PostsConfig = {
   summaryLength: 200,
 };
 
+// Robots 配置
+export const robotsConfig: RobotsConfigList = {
+  robots: [
+    {
+      userAgent: '*',
+      disallow: ['/'],
+    },
+  ],
+};
+
+// service-worker 配置
+export const serviceWorkerConfig: ServiceWorkerConfig = {
+  enabled: true,
+};
+
 // 完整配置对象
 export const config = {
   site: siteConfig,
   social: socialConfig,
   posts: postsConfig,
+  profile: profileConfig,
+  robots: robotsConfig,
 };
 
 export default config;

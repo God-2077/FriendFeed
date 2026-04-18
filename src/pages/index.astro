@@ -4,9 +4,11 @@ import Background from '../components/Background.astro';
 import ProfileHeader from '../components/ProfileHeader.astro';
 import ArticleList from '../components/react/ArticleList';
 import Footer from '../components/Footer.astro';
+import { siteConfig } from '@config/config';
+
 ---
 
-<Layout title="FriendFeed - RSS Feed Preview">
+<Layout title={siteConfig.title} description={siteConfig.description} openGraphImage={siteConfig.openGraphImage} baseUrl={siteConfig.baseUrl}>
   <Background />
   <div class="container">
     <ProfileHeader />

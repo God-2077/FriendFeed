@@ -1,6 +1,6 @@
-import type { PostItem } from '../../config/type';
-import { truncateText, parseDate } from '../../utils/utils';
-import config from '../../config/config';
+import type { PostItem } from '@config/type';
+import { truncateText, parseDate } from '@utils/utils';
+import config from '@config/config';
 
 interface ArticleCardProps {
   post: PostItem;

@@ -1,27 +1,48 @@
 ---
 interface Props {
-  title: string;
+    title: string;
+    description: string;
+    openGraphImage: string;
+    baseUrl: string;
 }
 
-const { title } = Astro.props;
+const { title, description, openGraphImage, baseUrl } = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Feeds - RSS Feed Preview" />
-    <meta name="theme-color" content="#121214" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <slot />
-  </body>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content={description} />
+        <meta name="theme-color" content="#121214" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <title>{title}</title>
+
+        <!-- Open Graph Meta Tags -->
+        <meta property="og:url" content={baseUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta
+            property="og:image"
+            content={openGraphImage}
+        /><!-- Load error, please check URL -->
+
+        <!-- Twitter Meta Tags -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:domain" content={(new URL(baseUrl)).hostname} />
+        <meta property="twitter:url" content={baseUrl} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={openGraphImage} />
+    </head>
+    <body>
+        <slot />
+    </body>
 </html>
 
 <style is:global>
-  @import '../styles/feed.css';
-  @import '../styles/index.css';
+    @import "../styles/feed.css";
+    @import "../styles/index.css";
 </style>

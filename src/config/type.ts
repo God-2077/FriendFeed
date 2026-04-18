@@ -1,3 +1,6 @@
+
+import { type GenerateSWOptions, type InjectManifestOptions } from "workbox-build";
+
 // 友站爬虫配置
 export interface FriendLinkCrawl {
   url: string;
@@ -42,11 +45,18 @@ export interface PostItem {
 
 export interface SiteConfig {
   title: string;
+  description: string;
+  openGraphImage: string;
+  baseUrl: string;
+}
+
+export interface ProfileConfig {
+  title: string;
   author: string;
   subtitle: string;
   bio: string;
   avatar: string;
-  baseUrl: string;
+  url: string;
 }
 
 export interface SocialConfig {
@@ -58,4 +68,22 @@ export interface PostsConfig {
   content: PostItem[];
   maxCount: number;
   summaryLength: number;
+}
+
+
+export interface RobotsConfig {
+  userAgent: string;
+  disallow?: string[];
+  allow?: string[];
+  Sitemap?: string;
+}
+
+export interface RobotsConfigList {
+  robots: RobotsConfig[];
+}
+
+
+export interface ServiceWorkerConfig {
+  enabled: boolean;
+  workbox?: GenerateSWOptions | InjectManifestOptions;
 }

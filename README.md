@@ -21,7 +21,7 @@
 
 ## 项目概述
 
-FriendFeed 是一个基于 React + TypeScript 开发的友链文章聚合平台，能够自动爬取并展示多个友链网站的最新文章，按发布时间倒序排列，为用户提供一个集中浏览友站内容的便捷方式。
+FriendFeed 是一个基于 Astro + React 开发的友链文章聚合平台，能够自动爬取并展示多个友链网站的最新文章，按发布时间倒序排列，为用户提供一个集中浏览友站内容的便捷方式。采用 Astro 的 Islands 架构，结合了服务端渲染的性能优势和 React 的交互能力。
 
 ## 核心功能
 
@@ -31,66 +31,66 @@ FriendFeed 是一个基于 React + TypeScript 开发的友链文章聚合平台�
 - **响应式设计**：适配不同屏幕尺寸，提供良好的移动端体验
 - **自定义配置**：支持通过配置文件灵活添加、修改友站信息
 - **多格式支持**：兼容 RSS 2.0、RSS 1.0 (RDF) 和 Atom 1.0 格式
+- **Service Worker 支持**：集成 PWA 功能，支持离线访问和性能优化
+- **SEO 优化**：添加完整的 Open Graph 和 Twitter Card 元标签，提升搜索引擎友好度
+- **动态 robots.txt**：根据配置自动生成爬虫规则
 
 ## 技术栈
 
 ### 前端技术
-- **框架**：React 19.2.4
+- **框架**：Astro 5.0 + React 19.2.4
 - **语言**：TypeScript 5.9.3
-- **构建工具**：Vite 8.0.1
+- **构建工具**：Astro 构建系统
 - **HTTP 客户端**：Axios 1.15.0
-- **图标库**：@remixicon/react 4.9.0
-- **React 编译器**：启用 React Compiler 提升性能
+- **图标方案**：内联 SVG 图标
+- **PWA 支持**：Service Worker 集成
 
 ### 核心功能实现
 - **爬虫功能**：通过 `crawler.ts` 实现对友站 RSS 源的爬取和解析
 - **数据处理**：使用 TypeScript 类型系统确保数据结构的一致性
 - **状态管理**：使用 React useState 和 useEffect 管理应用状态
 - **样式**：自定义 CSS 样式，实现现代化的 UI 设计
+- **Islands 架构**：静态组件使用 Astro 服务端渲染，动态组件保留为 React Islands
 
 ## 项目结构
 
 ```
 ├── public/            # 静态资源
 │   ├── favicon.svg
-│   ├── icons.svg
-│   └── robots.txt
 ├── raw/              # 原始HTML和CSS
 │   ├── feed.css
 │   └── index.html
 ├── src/              # 源代码
-│   ├── assets/       # 图片等资源
-│   ├── components/   # React组件
-│   │   ├── ArticleCard/     # 文章卡片组件
-│   │   ├── ArticleList/     # 文章列表组件
-│   │   ├── Background/      # 背景组件
-│   │   ├── Footer/          # 页脚组件
-│   │   ├── FriendLinkHeader/ # 友链头部组件
-│   │   ├── ProfileHeader/   # 个人资料头部组件
-│   │   └── SocialLinks/     # 社交链接组件
+│   ├── components/   # 组件
+│   │   ├── react/     # React Islands（动态交互组件）
+│   │   │   ├── ArticleCard.tsx      # 文章卡片组件
+│   │   │   └── ArticleList.tsx      # 文章列表组件
+│   │   ├── Background.astro         # 背景组件（静态）
+│   │   ├── Footer.astro            # 页脚组件（静态）
+│   │   ├── ProfileHeader.astro     # 个人资料头部组件（静态）
+│   │   └── SocialLinks.astro       # 社交链接组件（静态）
 │   ├── config/       # 配置文件
 │   │   ├── config.ts        # 主配置文件
 │   │   └── type.ts          # 类型定义
+│   ├── layouts/      # 布局组件
+│   │   └── Layout.astro     # 主布局组件
+│   ├── pages/        # 页面组件
+│   │   ├── index.astro       # 首页
+│   │   └── robots.txt.ts     # 动态生成robots.txt
 │   ├── styles/       # 样式文件
-│   │   └── feed.css
+│   │   ├── feed.css
+│   │   └── index.css
 │   ├── utils/        # 工具函数
 │   │   ├── crawler.ts        # 爬虫功能
 │   │   └── utils.ts          # 通用工具函数
-│   ├── App.tsx       # 主应用组件
-│   ├── index.css
-│   └── main.tsx      # 应用入口
 ├── .gitignore
 ├── .hintrc
 ├── README.md
-├── ai.md
+├── astro.config.mjs      # Astro配置文件
 ├── eslint.config.js
-├── index.html
 ├── package.json
 ├── pnpm-lock.yaml
-├── tsconfig.app.json
-├── tsconfig.json
-├── tsconfig.node.json
-└── vite.config.ts
+└── tsconfig.json
 ```
 
 ## 安装与配置
@@ -135,16 +135,25 @@ FriendFeed 是一个基于 React + TypeScript 开发的友链文章聚合平台�
 
 4. **配置网站信息**
 
-   修改 `siteConfig` 对象，设置网站标题、作者、副标题等信息：
+   修改 `siteConfig` 和 `profileConfig` 对象，分别设置网站元数据和个人资料信息：
 
    ```typescript
+   // 网站元数据配置
    export const siteConfig: SiteConfig = {
+     title: 'FriendFeed - RSS Feed Preview',
+     description: '一个基于 RSS Feed 的博客，分享技术、生活、工作等。',
+     openGraphImage: 'https://assets.ksable.top/me/gravatar.jpg',
+     baseUrl: 'https://friendfeed.ksable.top/',
+   };
+
+   // 个人资料配置
+   export const profileConfig: ProfileConfig = {
      title: '你的网站标题',
      author: '你的名字',
      subtitle: '网站副标题',
      bio: '网站简介',
      avatar: '你的头像URL',
-     baseUrl: '你的网站基础URL',
+     url: '你的网站URL',
    };
    ```
 
@@ -163,6 +172,31 @@ FriendFeed 是一个基于 React + TypeScript 开发的友链文章聚合平台�
    };
    ```
 
+6. **配置爬虫规则**
+
+   修改 `robotsConfig` 对象，设置爬虫访问规则：
+
+   ```typescript
+   export const robotsConfig: RobotsConfigList = {
+     robots: [
+       {
+         userAgent: '*',
+         disallow: ['/'],
+       },
+     ],
+   };
+   ```
+
+7. **配置 Service Worker**
+
+   修改 `serviceWorkerConfig` 对象，启用或禁用 PWA 功能：
+
+   ```typescript
+   export const serviceWorkerConfig: ServiceWorkerConfig = {
+     enabled: true,
+   };
+   ```
+
 ## 使用方法
 
 ### 开发模式
@@ -171,7 +205,7 @@ FriendFeed 是一个基于 React + TypeScript 开发的友链文章聚合平台�
 pnpm dev
 ```
 
-应用将在 `http://localhost:5173` 启动，支持热重载。
+应用将在 `http://localhost:4321` 启动，支持热重载。
 
 ### 构建生产版本
 
@@ -248,12 +282,26 @@ A: 爬取速度主要受限于网络请求速度和友站响应速度。可以�
 
 A: 可以将 `pnpm build` 生成的 `dist` 目录部署到任何静态网站托管服务，如 Vercel、Netlify、GitHub Pages 等。
 
+### Q: Service Worker 功能如何使用？
+
+A: Service Worker 功能默认已启用，可在 `src/config/config.ts` 中的 `serviceWorkerConfig` 对象中进行配置。启用后，网站将支持离线访问和性能优化。
+
+### Q: 如何修改爬虫规则？
+
+A: 可以在 `src/config/config.ts` 中的 `robotsConfig` 对象中修改爬虫访问规则，系统会自动生成对应的 `robots.txt` 文件。
+
+### Q: 项目使用的是什么架构？
+
+A: 项目采用 Astro + React Islands 混合架构，静态组件使用 Astro 服务端渲染，动态交互组件保留为 React Islands，兼顾性能和交互体验。
+
 ## 注意事项
 
 - 本项目仅用于个人学习和非商业用途
 - 爬取友站内容时请遵守相关网站的 robots.txt 规则
 - 建议合理设置爬取频率，避免对友站造成过大负担
 - HTML 爬取功能目前处于开发中，暂不支持
+- Service Worker 功能需要 HTTPS 环境才能正常工作
+- 部署时请确保托管服务支持 Astro 构建产物
 
 ## 贡献
 

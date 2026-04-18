@@ -1,5 +1,5 @@
 ---
-import { siteConfig, socialConfig } from '../config/config';
+import { profileConfig, socialConfig } from '@config/config';
 import SocialLinks from './SocialLinks.astro';
 ---
 
@@ -7,16 +7,16 @@ import SocialLinks from './SocialLinks.astro';
   <div class="profile-card">
     <div class="avatar-wrapper">
       <div class="avatar-container">
-        <img src={siteConfig.avatar} alt={siteConfig.title} class="avatar" />
+        <img src={profileConfig.avatar} alt={profileConfig.title} class="avatar" />
         <div class="cat-ear left"></div>
         <div class="cat-ear right"></div>
       </div>
     </div>
     
     <div class="profile-info">
-      <h1 class="site-title">{siteConfig.title}</h1>
-      <p class="site-subtitle">{siteConfig.subtitle}</p>
-      <p class="site-bio">{siteConfig.bio}</p>
+      <h1 class="site-title">{profileConfig.title}</h1>
+      <p class="site-subtitle">{profileConfig.subtitle}</p>
+      <p class="site-bio">{profileConfig.bio}</p>
       <SocialLinks links={socialConfig.links} />
     </div>
     
@@ -29,7 +29,7 @@ import SocialLinks from './SocialLinks.astro';
         class="visit-btn" 
         target="_blank" 
         rel="noopener noreferrer" 
-        href={siteConfig.baseUrl}
+        href={profileConfig.url}
       >
         访问网站 
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16.172 11l-5.364-5.364 1.414-1.414L20 12l-7.778 7.778-1.414-1.414L16.172 13H4v-2z"/></svg>
