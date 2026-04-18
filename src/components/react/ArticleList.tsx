@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import type { PostItem } from '../../config/type';
-import type { CrawlStatus } from '../../utils/crawler';
-import { friendLinks as configFriendLinks, postsConfig } from '../../config/config';
-import { parseDate } from '../../utils/utils';
+import type { PostItem } from '@config/type';
+import type { CrawlStatus } from '@utils/crawler';
+import { friendLinks as configFriendLinks, postsConfig } from '@config/config';
+import { parseDate } from '@utils/utils';
 import ArticleCard from './ArticleCard';
 
 interface FriendLinkStatus {

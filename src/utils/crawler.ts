@@ -1,7 +1,7 @@
 // 导入工具函数
-import { parseDate } from './utils';
-import { crawlConfig } from '../config/config';
-import type { FriendLink, PostItem } from '../config/type';
+import { parseDate } from '@utils/utils';
+import { crawlConfig } from '@config/config';
+import type { FriendLink, PostItem } from '@config/type';
 import axios from 'axios';
 
 /**
