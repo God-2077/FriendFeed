@@ -6,9 +6,9 @@ import { serviceWorkerConfig } from "./src/config/config";
 export default defineConfig({
   integrations: [
     react(),
-    serviceWorkerConfig.enabled && serviceWorker({
+    ...(serviceWorkerConfig.enabled ? [serviceWorker({
         ...(serviceWorkerConfig.workbox || {}),
-    }),
+    })] : []),
   ],
   vite: {
     resolve: {
