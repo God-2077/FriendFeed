@@ -30,6 +30,7 @@ const getIconSvg = (type: SocialLink['type']) => {
       title={link.label}
       aria-label={link.label}
     >
+      {/* eslint-disable-next-line astro/no-set-html-directive */}
       <Fragment set:html={getIconSvg(link.type)} />
     </a>
   ))}
