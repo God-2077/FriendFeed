@@ -8,27 +8,15 @@ importers:
 
   .:
     dependencies:
-      '@astrojs/react':
-        specifier: ^4.0.0
-        version: 4.4.2(@types/node@25.6.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(terser@5.46.1)
       '@remixicon/react':
         specifier: ^4.9.0
         version: 4.9.0(react@19.2.5)
-      '@typescript-eslint/parser':
-        specifier: ^8.58.2
-        version: 8.58.2(eslint@9.39.4)(typescript@5.9.3)
       astro:
         specifier: ^5.0.0
         version: 5.18.1(@types/node@25.6.0)(rollup@2.80.0)(terser@5.46.1)(typescript@5.9.3)
-      astrojs-service-worker:
-        specifier: ^2.0.0
-        version: 2.0.0(@types/babel__core@7.20.5)(astro@5.18.1(@types/node@25.6.0)(rollup@2.80.0)(terser@5.46.1)(typescript@5.9.3))
       axios:
         specifier: ^1.15.0
         version: 1.15.0
-      eslint-plugin-astro:
-        specifier: ^1.7.0
-        version: 1.7.0(eslint@9.39.4)
       react:
         specifier: ^19.2.4
         version: 19.2.5
@@ -36,6 +24,9 @@ importers:
         specifier: ^19.2.4
         version: 19.2.5(react@19.2.5)
     devDependencies:
+      '@astrojs/react':
+        specifier: ^4.4.2
+        version: 4.4.2(@types/node@25.6.0)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)(terser@5.46.1)
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -45,9 +36,18 @@ importers:
       '@typescript-eslint/eslint-plugin':
         specifier: ^8.58.2
         version: 8.58.2(@typescript-eslint/parser@8.58.2(eslint@9.39.4)(typescript@5.9.3))(eslint@9.39.4)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: ^8.58.2
+        version: 8.58.2(eslint@9.39.4)(typescript@5.9.3)
+      astrojs-service-worker:
+        specifier: ^2.0.0
+        version: 2.0.0(@types/babel__core@7.20.5)(astro@5.18.1(@types/node@25.6.0)(rollup@2.80.0)(terser@5.46.1)(typescript@5.9.3))
       eslint:
         specifier: ^9.39.4
         version: 9.39.4
+      eslint-plugin-astro:
+        specifier: ^1.7.0
+        version: 1.7.0(eslint@9.39.4)
       globals:
         specifier: ^17.5.0
         version: 17.5.0
