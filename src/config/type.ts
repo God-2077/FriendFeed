@@ -1,3 +1,6 @@
+
+import { type GenerateSWOptions, type InjectManifestOptions } from "workbox-build";
+
 // 友站爬虫配置
 export interface FriendLinkCrawl {
   url: string;
@@ -77,4 +80,10 @@ export interface RobotsConfig {
 
 export interface RobotsConfigList {
   robots: RobotsConfig[];
+}
+
+
+export interface ServiceWorkerConfig {
+  enabled: boolean;
+  workbox?: GenerateSWOptions | InjectManifestOptions;
 }

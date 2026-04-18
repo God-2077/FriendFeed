@@ -5,6 +5,7 @@ import type {
     PostsConfig,
     RobotsConfigList,
     ProfileConfig,
+    ServiceWorkerConfig,
 } from './type';
 
 // 网站配置
@@ -175,7 +176,10 @@ export const robotsConfig: RobotsConfigList = {
   ],
 };
 
-
+// service-worker 配置
+export const serviceWorkerConfig: ServiceWorkerConfig = {
+  enabled: true,
+};
 
 // 完整配置对象
 export const config = {
