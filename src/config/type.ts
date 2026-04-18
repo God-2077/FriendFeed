@@ -41,13 +41,19 @@ export interface PostItem {
 }
 
 export interface SiteConfig {
-  pageTitle: string;
+  title: string;
+  description: string;
+  openGraphImage: string;
+  baseUrl: string;
+}
+
+export interface ProfileConfig {
   title: string;
   author: string;
   subtitle: string;
   bio: string;
   avatar: string;
-  baseUrl: string;
+  url: string;
 }
 
 export interface SocialConfig {

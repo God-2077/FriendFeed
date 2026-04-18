@@ -4,17 +4,24 @@ import type {
     SocialConfig,
     PostsConfig,
     RobotsConfigList,
+    ProfileConfig,
 } from './type';
 
 // 网站配置
 export const siteConfig: SiteConfig = {
-  pageTitle: "FriendFeed - RSS Feed Preview",
+  title: "FriendFeed - RSS Feed Preview",
+  description: "一个基于 RSS Feed 的博客，分享技术、生活、工作等。",
+  openGraphImage: 'https://assets.ksable.top/me/gravatar.jpg',
+  baseUrl: 'https://friendfeed.ksable.top/',
+};
+
+export const profileConfig: ProfileConfig = {
   title: 'Ksable\'s 小屋',
   author: 'kissablecho',
   subtitle: '一个记录生活，分享技术的博客',
   bio: "kissablecho 的个人博客 / 记录生活，分享技术 / 喜欢二次元和白丝。",
   avatar: 'https://assets.ksable.top/me/gravatar.jpg',
-  baseUrl: 'https://blog.ksable.top/',
+  url: 'https://blog.ksable.top/',
 };
 
 // 友站
