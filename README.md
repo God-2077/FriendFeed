@@ -1,4 +1,4 @@
-<div align="center">
+<!-- <div align="center">
   <img src="https://socialify.git.ci/God-2077/FriendFeed/image?font=JetBrains+Mono&language=1&name=1&owner=1&pattern=Circuit+Board&theme=Auto" alt="python-code" width="640" height="320" />
 </div>
 <div align="center">
@@ -15,9 +15,9 @@
     <img src="https://img.shields.io/github/license/God-2077/FriendFeed?color=ff5722" alt="GitHub License">
   </a>
 </div>
-<br />
+<br /> -->
 
-<!-- # FriendFeed - 友链文章聚合平台 -->
+# FriendFeed - 友链文章聚合平台
 
 ## 项目概述
 
