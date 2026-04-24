@@ -100,14 +100,6 @@ export const friendLinks: FriendLink[] = [
     }
   },
   {
-    name: "拂晓不辍",
-    url: "https://eggk.net/",
-    crawl: {
-      url: "https://eggk.net/feed/",
-      type: "rss"
-    }
-  },
-  {
     name: "云藉",
     url: "https://kumosya.top/",
     crawl: {
