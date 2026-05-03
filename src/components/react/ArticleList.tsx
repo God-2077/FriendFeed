@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import { RiExternalLinkLine } from '@remixicon/react';
 import type { PostItem } from '@config/type';
 import type { CrawlStatus } from '@utils/crawler';
 import { friendLinks as configFriendLinks, postsConfig } from '@config/config';
@@ -20,6 +21,43 @@ export default function ArticleList() {
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [friendLinkStatuses, setFriendLinkStatuses] = useState<FriendLinkStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
+
+  const totalCrawledCount = posts.length;
+
+  const friendPostCount = useMemo(() => {
+    const map = new Map<string, number>();
+    posts.forEach(post => {
+      const name = post.friendLinkName;
+      if (name) map.set(name, (map.get(name) || 0) + 1);
+    });
+    return map;
+  }, [posts]);
+
+  const filteredPosts = useMemo(() => {
+    const filtered = selectedFriend
+      ? posts.filter(post => post.friendLinkName === selectedFriend)
+      : posts;
+    return filtered.slice(0, postsConfig.maxCount);
+  }, [posts, selectedFriend]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const friendParam = params.get('friend');
+    if (friendParam && friendLinkStatuses.some(f => f.name === friendParam)) {
+      setSelectedFriend(friendParam);
+    }
+  }, [friendLinkStatuses]);
+
+  useEffect(() => {
+    const newUrl = new URL(window.location.href);
+    if (selectedFriend) {
+      newUrl.searchParams.set('friend', selectedFriend);
+    } else {
+      newUrl.searchParams.delete('friend');
+    }
+    window.history.replaceState({}, '', newUrl.toString());
+  }, [selectedFriend]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -56,9 +94,8 @@ export default function ArticleList() {
           return dateB.getTime() - dateA.getTime();
         });
 
-        // 限制数量
-        const limitedPosts = allPosts.slice(0, postsConfig.maxCount);
-        setPosts(limitedPosts);
+        // 存储全部文章（计数用全量，展示按 maxCount 截取）
+        setPosts(allPosts);
 
         // 更新友站状态
         const updatedStatuses: FriendLinkStatus[] = configFriendLinks.map((fl, index) => ({
@@ -94,28 +131,52 @@ export default function ArticleList() {
         </h2>
         <p className="feed-desc">{postsConfig.desc}</p>
         
-        {/* 友站状态展示 */}
         {friendLinkStatuses.length > 0 && (
           <div className="friend-links-bar">
-            {friendLinkStatuses.map((link) => (
-              <span
-                key={link.url}
-                className={`friend-link-status ${link.status}`}
-                title={link.error || link.status}
-              >
-                <span className={`status-dot ${link.status}`} />
-                <a
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+            <button
+              className={`friend-link-status ${!selectedFriend ? 'active' : ''}`}
+              onClick={() => setSelectedFriend(null)}
+              disabled={isLoading}
+            >
+              全部 ({totalCrawledCount})
+            </button>
+            {friendLinkStatuses.map((link) => {
+              const count = friendPostCount.get(link.name) || 0;
+              return (
+                <button
+                  key={link.url}
+                  className={`friend-link-status ${link.status} ${selectedFriend === link.name ? 'active' : ''}`}
+                  onClick={() => setSelectedFriend(link.name)}
+                  disabled={isLoading}
                 >
+                  <span className={`status-dot ${link.status}`} />
                   {link.name}
-                </a>
-                {link.status === 'error' && link.error && (
-                  <span className="error-message">({link.error})</span>
-                )}
-              </span>
-            ))}
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="friend-external-link"
+                    title={`访问 ${link.name}`}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <RiExternalLinkLine size={14} />
+                  </a>
+                  {' '}({count})
+                  {link.status === 'error' && link.error && (
+                    <span className="error-message">({link.error})</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
+        {selectedFriend && !isLoading && (
+          <div className="filter-info">
+            <span>当前筛选：<strong>{selectedFriend}</strong> · 共 {filteredPosts.length} 篇文章</span>
+            <button className="clear-filter" onClick={() => setSelectedFriend(null)}>
+              清除筛选
+            </button>
           </div>
         )}
       </div>
@@ -128,14 +189,21 @@ export default function ArticleList() {
       )}
       
       <div className="articles-grid">
-        {posts.map((post) => (
+        {filteredPosts.map((post) => (
           <ArticleCard key={post.id} post={post} />
         ))}
       </div>
-      
-      {!isLoading && posts.length === 0 && (
+
+      {!isLoading && filteredPosts.length === 0 && (
         <div className="empty-state">
-          <p>暂无文章</p>
+          {selectedFriend ? (
+            <>
+              <p>该友站暂无文章</p>
+              <p className="empty-hint">可尝试切换其他友站或查看全部</p>
+            </>
+          ) : (
+            <p>暂无文章</p>
+          )}
         </div>
       )}
     </main>

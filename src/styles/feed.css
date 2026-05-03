@@ -455,6 +455,9 @@ body {
   flex-wrap: wrap;
   margin-top: 0.75rem;
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .friend-link-status {
@@ -462,15 +465,37 @@ body {
   align-items: center;
   gap: 0.25rem;
   font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+  padding: 0.35rem 0.6rem;
   border-radius: var(--radius-sm);
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   transition: var(--transition-smooth);
+  cursor: pointer;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-height: 36px;
+}
+
+.friend-link-status:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-main);
+}
+
+.friend-link-status:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.friend-link-status.active {
+  background: var(--accent-purple-dim);
+  border-color: var(--accent-purple);
+  color: var(--accent-purple);
 }
 
 .friend-link-status a {
-  color: var(--text-muted);
+  color: inherit;
   text-decoration: none;
 }
 
@@ -510,6 +535,56 @@ body {
   border-color: rgba(255, 183, 178, 0.3);
 }
 
+.friend-external-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.friend-external-link:hover {
+  color: var(--accent-mint);
+}
+
+.friend-link-status .error-message {
+  color: var(--accent-pink);
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+/* Filter Info Bar */
+.filter-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.filter-info strong {
+  color: var(--accent-purple);
+}
+
+.filter-info .clear-filter {
+  background: none;
+  border: none;
+  color: var(--accent-mint);
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-smooth);
+}
+
+.filter-info .clear-filter:hover {
+  background: rgba(178, 247, 239, 0.1);
+}
+
 /* Loading & Empty States */
 .loading-state,
 .empty-state {
@@ -526,6 +601,13 @@ body {
 .empty-state i {
   font-size: 2rem;
   margin-bottom: 0.5rem;
+}
+
+.empty-hint {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  opacity: 0.7;
 }
 
 /* Articles Grid */
