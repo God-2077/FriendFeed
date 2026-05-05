@@ -5,6 +5,7 @@
 ```bash
 pnpm dev        # Start dev server at http://localhost:4321
 pnpm build      # Build to dist/
+pnpm check      # Run astro check (type-check .astro files)
 pnpm lint       # Run ESLint
 pnpm preview    # Preview production build
 ```
@@ -19,14 +20,21 @@ pnpm preview    # Preview production build
 
 | Path | Purpose |
 |------|---------|
-| `src/config/config.ts` | Friend links, site metadata, social links, PWA config |
+| `src/config/config.ts` | Friend links (multi-group), site metadata, social links, PWA config |
+| `src/config/type.ts` | TypeScript types: `FriendLink`, `FriendLinkGroup`, `AppData`, `PostItem`, etc. |
+| `src/context/AppContext.tsx` | React Context + Provider wrapping the friend feed store |
+| `src/hooks/useFriendFeedStore.ts` | State management hook; persists edits to `localStorage` |
+| `src/components/react/FeedIsland.tsx` | Single client island wrapping AppProvider + ArticleList + AdminPanel |
+| `src/components/react/ArticleList.tsx` | Fetches & displays RSS articles for the active group |
+| `src/components/react/AdminPanel.tsx` | Hidden admin panel (dblclick `.site-title` or `Ctrl+Shift+K`) |
+| `src/components/react/ArticleCard.tsx` | Single article card |
+| `src/components/*.astro` | Static Astro components (Background, ProfileHeader, Footer, SocialLinks) |
 | `src/utils/crawler.ts` | RSS/Atom feed fetching and parsing |
-| `src/components/react/` | Interactive React Islands |
-| `src/components/*.astro` | Static Astro components |
 
 ## Key Config Locations
 
-- Friend links: `src/config/config.ts` → `friendLinks` array
+- Friend links (multi-group): `src/config/config.ts` → `friendLinkGroups` array, plus `friendLinks` for backward compat
+- Types: `src/config/type.ts` → `FriendLinkGroup { name, links[] }`, `AppData { groups[], activeGroupIndex }`
 - Site metadata: `src/config/config.ts` → `siteConfig`, `profileConfig`
 - PWA: `src/config/config.ts` → `serviceWorkerConfig`
 
@@ -36,6 +44,13 @@ Configured in `tsconfig.json` and `astro.config.mjs`:
 - `@/` → `src/`
 - `@config/` → `src/config/`
 - `@components/` → `src/components/`
+- `@utils/` → `src/utils/`
+
+## Architecture Notes
+
+- **State flows through React Context**: `FeedIsland` (single `client:load` island) wraps `AppProvider` which provides the store to `ArticleList` + `AdminPanel`. Multiple `client:load` islands create separate React roots — they can't share context.
+- **localStorage persistence**: `useFriendFeedStore` loads initial data from `friendLinkGroups` in config, then persists all edits (add/delete groups, add/edit/delete links, active group) to `localStorage` key `friendfeed_data`.
+- **Group switching re-fetches**: When active group changes, `ArticleList` resets selected friend filter and re-crawls all feeds in the new group. A `groupRef` guards against stale async results.
 
 ## Linting
 
@@ -47,4 +62,3 @@ ESLint config at `eslint.config.js` enforces:
 ## What's Missing
 
 - No test framework in package.json
-- No typecheck script (Astro handles TypeScript internally)
