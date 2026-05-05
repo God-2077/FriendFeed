@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { RiExternalLinkLine } from '@remixicon/react';
 import type { PostItem } from '@config/type';
 import type { CrawlStatus } from '@utils/crawler';
-import { friendLinks as configFriendLinks, postsConfig } from '@config/config';
+import { postsConfig } from '@config/config';
 import { parseDate } from '@utils/utils';
+import { useAppContext } from '../../context/AppContext';
 import ArticleCard from './ArticleCard';
 
 interface FriendLinkStatus {
@@ -18,10 +19,13 @@ interface FriendLinkStatus {
  * 在客户端加载 RSS 数据
  */
 export default function ArticleList() {
+  const { activeGroup } = useAppContext();
+  const currentLinks = activeGroup.links;
   const [posts, setPosts] = useState<PostItem[]>([]);
   const [friendLinkStatuses, setFriendLinkStatuses] = useState<FriendLinkStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
+  const groupRef = useRef(currentLinks);
 
   const totalCrawledCount = posts.length;
 
@@ -42,6 +46,10 @@ export default function ArticleList() {
   }, [posts, selectedFriend]);
 
   useEffect(() => {
+    setSelectedFriend(null);
+  }, [currentLinks]);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const friendParam = params.get('friend');
     if (friendParam && friendLinkStatuses.some(f => f.name === friendParam)) {
@@ -60,9 +68,18 @@ export default function ArticleList() {
   }, [selectedFriend]);
 
   useEffect(() => {
+    const links = currentLinks;
+    groupRef.current = links;
+
     const fetchPosts = async () => {
-      // 初始化友站状态为加载中
-      const initialStatuses: FriendLinkStatus[] = configFriendLinks.map((fl) => ({
+      if (links.length === 0) {
+        setPosts([]);
+        setFriendLinkStatuses([]);
+        setIsLoading(false);
+        return;
+      }
+
+      const initialStatuses: FriendLinkStatus[] = links.map((fl) => ({
         name: fl.name,
         url: fl.url,
         status: 'loading' as CrawlStatus,
@@ -70,21 +87,19 @@ export default function ArticleList() {
       setFriendLinkStatuses(initialStatuses);
 
       try {
-        // 动态导入爬虫模块（仅在客户端执行）
         const { crawlFriendLink } = await import('../../utils/crawler');
         
-        // 爬取每个友站的文章
         const results = await Promise.all(
-          configFriendLinks.map(friendLink => crawlFriendLink(friendLink))
+          links.map(friendLink => crawlFriendLink(friendLink))
         );
 
-        // 合并所有文章
+        if (groupRef.current !== links) return;
+
         const allPosts: PostItem[] = [];
         results.forEach(result => {
           allPosts.push(...result.posts);
         });
 
-        // 按发布时间倒序排序
         allPosts.sort((a, b) => {
           const dateA = parseDate(a.date);
           const dateB = parseDate(b.date);
@@ -94,11 +109,9 @@ export default function ArticleList() {
           return dateB.getTime() - dateA.getTime();
         });
 
-        // 存储全部文章（计数用全量，展示按 maxCount 截取）
         setPosts(allPosts);
 
-        // 更新友站状态
-        const updatedStatuses: FriendLinkStatus[] = configFriendLinks.map((fl, index) => ({
+        const updatedStatuses: FriendLinkStatus[] = links.map((fl, index) => ({
           name: fl.name,
           url: fl.url,
           status: results[index].status,
@@ -106,8 +119,8 @@ export default function ArticleList() {
         }));
         setFriendLinkStatuses(updatedStatuses);
       } catch (error) {
-        // 更新友站状态为失败
-        const errorStatuses: FriendLinkStatus[] = configFriendLinks.map((fl) => ({
+        if (groupRef.current !== links) return;
+        const errorStatuses: FriendLinkStatus[] = links.map((fl) => ({
           name: fl.name,
           url: fl.url,
           status: 'error' as CrawlStatus,
@@ -115,12 +128,14 @@ export default function ArticleList() {
         }));
         setFriendLinkStatuses(errorStatuses);
       } finally {
-        setIsLoading(false);
+        if (groupRef.current === links) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchPosts();
-  }, []);
+  }, [currentLinks]);
 
   return (
     <main className="feed-content">

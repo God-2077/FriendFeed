@@ -1,5 +1,6 @@
 import type {
     FriendLink,
+    FriendLinkGroup,
     SiteConfig,
     SocialConfig,
     PostsConfig,
@@ -131,6 +132,14 @@ export const friendLinks: FriendLink[] = [
       type: "rss"
     }
   }
+];
+
+// 多组友站配置
+export const friendLinkGroups: FriendLinkGroup[] = [
+  {
+    name: '默认组',
+    links: friendLinks,
+  },
 ];
 
 // 爬虫配置

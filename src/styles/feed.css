@@ -899,3 +899,185 @@ body {
     font-size: 0.75rem;
   }
 }
+
+/* --- Admin Panel --- */
+.admin-overlay {
+  position: fixed; inset: 0; z-index: 999;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.admin-panel {
+  width: min(92vw, 680px); max-height: 88vh; overflow-y: auto;
+  background: var(--card-bg); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border); border-radius: var(--radius-lg);
+  padding: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  display: flex; flex-direction: column; gap: 1rem;
+}
+
+.admin-panel-header {
+  display: flex; justify-content: space-between; align-items: center;
+}
+
+.admin-title {
+  font-size: 1.2rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--text-main), var(--accent-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- Group Tabs --- */
+.admin-groups { display: flex; flex-direction: column; gap: 0.5rem; }
+
+.admin-groups-bar { display: flex; align-items: center; gap: 0.5rem; }
+
+.admin-groups-tabs {
+  display: flex; gap: 0.4rem; flex-wrap: wrap; flex: 1;
+}
+
+.admin-group-tab {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.35rem 0.6rem; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+  color: var(--text-muted); font-size: 0.78rem; cursor: pointer;
+  transition: var(--transition-smooth); font-family: inherit;
+}
+
+.admin-group-tab:hover { background: rgba(255,255,255,0.08); color: var(--text-main); }
+
+.admin-group-tab.active {
+  background: var(--accent-purple-dim); border-color: var(--accent-purple);
+  color: var(--accent-purple); font-weight: 600;
+}
+
+.group-tab-arrow { display: inline-flex; align-items: center; opacity: 0.5; }
+.group-tab-delete {
+  display: inline-flex; align-items: center; margin-left: 0.15rem;
+  opacity: 0.4; color: var(--accent-pink);
+}
+.group-tab-delete:hover { opacity: 1; }
+
+.admin-group-add {
+  display: flex; gap: 0.4rem; align-items: center;
+}
+
+.admin-group-add .admin-input { flex: 1; }
+
+/* --- Inputs & Buttons --- */
+.admin-input {
+  padding: 0.45rem 0.65rem;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+  border-radius: var(--radius-sm); color: var(--text-main);
+  font-size: 0.82rem; font-family: inherit; outline: none; transition: border-color 0.2s;
+}
+.admin-input:focus { border-color: var(--accent-pink); }
+.admin-input::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+.admin-btn {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.4rem 0.8rem; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+  color: var(--text-muted); cursor: pointer; transition: var(--transition-smooth);
+  font-size: 0.82rem; font-family: inherit; white-space: nowrap;
+}
+.admin-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: var(--text-main); }
+.admin-btn-sm { padding: 0.3rem 0.55rem; font-size: 0.75rem; }
+.admin-btn-close { border: none; background: transparent; color: var(--text-muted); }
+.admin-btn-close:hover { color: var(--accent-pink); }
+
+.admin-btn-save {
+  background: var(--accent-pink-dim); border-color: rgba(255,183,178,0.3);
+  color: var(--accent-pink);
+}
+.admin-btn-save:hover { background: rgba(255,183,178,0.2); color: var(--text-main); }
+
+.admin-btn-danger:hover { border-color: var(--accent-pink); color: var(--accent-pink); }
+
+.admin-btn-export {
+  background: var(--accent-mint-dim); border-color: rgba(178,247,239,0.3);
+  color: var(--accent-mint);
+}
+.admin-btn-export:hover { background: rgba(178,247,239,0.15); }
+
+.admin-btn-reset { color: var(--text-muted); }
+.admin-btn-reset:hover { border-color: var(--accent-pink); color: var(--accent-pink); }
+
+/* --- Links List --- */
+.admin-links-header {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.82rem; color: var(--text-muted);
+}
+
+.admin-links-list { display: flex; flex-direction: column; gap: 0.4rem; }
+
+.admin-link-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0.55rem 0.7rem; border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.03); border: 1px solid transparent;
+  transition: var(--transition-smooth); gap: 0.5rem;
+}
+.admin-link-item:hover { border-color: var(--card-border); background: rgba(255,255,255,0.05); }
+
+.admin-link-info { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; min-width: 0; }
+.admin-link-name { font-size: 0.82rem; color: var(--text-main); font-weight: 600; }
+.admin-link-url, .admin-link-feed {
+  font-size: 0.72rem; color: var(--text-muted); overflow: hidden;
+  text-overflow: ellipsis; white-space: nowrap;
+}
+
+.admin-link-actions { display: flex; gap: 0.3rem; flex-shrink: 0; }
+
+.admin-link-edit-form {
+  display: flex; flex-direction: column; gap: 0.4rem; width: 100%;
+}
+.admin-link-add-form { border-color: var(--accent-pink-dim); }
+
+.admin-edit-actions { display: flex; gap: 0.4rem; margin-top: 0.2rem; }
+
+.admin-empty {
+  text-align: center; color: var(--text-muted); padding: 1.5rem;
+  font-size: 0.85rem;
+}
+
+.admin-footer {
+  display: flex; gap: 0.5rem; flex-wrap: wrap; padding-top: 0.5rem;
+  border-top: 1px solid var(--card-border);
+}
+
+/* --- Link Modal --- */
+.link-modal-overlay {
+  position: fixed; inset: 0; z-index: 1001;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.link-modal {
+  width: min(90vw, 420px);
+  background: var(--card-bg); backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border); border-radius: var(--radius-lg);
+  padding: 1.5rem; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+}
+
+.link-modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.link-modal-title {
+  font-size: 1.1rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--text-main), var(--accent-pink));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.link-modal-body { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.25rem; }
+
+.link-modal-field { display: flex; flex-direction: column; gap: 0.3rem; }
+
+.link-modal-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 500; }
+
+.link-modal-footer { display: flex; gap: 0.5rem; justify-content: flex-end; }

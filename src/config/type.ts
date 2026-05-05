@@ -24,6 +24,16 @@ export interface FriendLink {
   crawl: FriendLinkCrawl;
 }
 
+export interface FriendLinkGroup {
+  name: string;
+  links: FriendLink[];
+}
+
+export interface AppData {
+  groups: FriendLinkGroup[];
+  activeGroupIndex: number;
+}
+
 // 类型定义
 export interface SocialLink {
   type: 'github' | 'email' | 'rss' | 'bilibili' | 'twitter' | 'custom';

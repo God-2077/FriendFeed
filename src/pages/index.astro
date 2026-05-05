@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import Background from '../components/Background.astro';
 import ProfileHeader from '../components/ProfileHeader.astro';
-import ArticleList from '../components/react/ArticleList';
+import FeedIsland from '../components/react/FeedIsland';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '@config/config';
 
@@ -12,8 +12,7 @@ import { siteConfig } from '@config/config';
   <Background />
   <div class="container">
     <ProfileHeader />
-    <!-- Island: 客户端加载动态数据 -->
-    <ArticleList client:load />
+    <FeedIsland client:load />
     <Footer />
   </div>
 </Layout>
