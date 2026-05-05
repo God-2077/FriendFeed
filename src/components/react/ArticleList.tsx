@@ -25,6 +25,7 @@ export default function ArticleList() {
   const [friendLinkStatuses, setFriendLinkStatuses] = useState<FriendLinkStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
+  const [displayCount, setDisplayCount] = useState(postsConfig.maxCount);
   const groupRef = useRef(currentLinks);
 
   const totalCrawledCount = posts.length;
@@ -42,11 +43,19 @@ export default function ArticleList() {
     const filtered = selectedFriend
       ? posts.filter(post => post.friendLinkName === selectedFriend)
       : posts;
-    return filtered.slice(0, postsConfig.maxCount);
-  }, [posts, selectedFriend]);
+    return filtered.slice(0, displayCount);
+  }, [posts, selectedFriend, displayCount]);
+
+  const hasMore = useMemo(() => {
+    const total = selectedFriend
+      ? posts.filter(post => post.friendLinkName === selectedFriend).length
+      : totalCrawledCount;
+    return filteredPosts.length < total;
+  }, [posts, selectedFriend, filteredPosts.length, totalCrawledCount]);
 
   useEffect(() => {
     setSelectedFriend(null);
+    setDisplayCount(postsConfig.maxCount);
   }, [currentLinks]);
 
   useEffect(() => {
@@ -208,6 +217,17 @@ export default function ArticleList() {
           <ArticleCard key={post.id} post={post} />
         ))}
       </div>
+
+      {!isLoading && hasMore && (
+        <div className="load-more-wrapper">
+          <button
+            className="load-more-btn"
+            onClick={() => setDisplayCount((c) => c + postsConfig.maxCount)}
+          >
+            加载更多
+          </button>
+        </div>
+      )}
 
       {!isLoading && filteredPosts.length === 0 && (
         <div className="empty-state">
