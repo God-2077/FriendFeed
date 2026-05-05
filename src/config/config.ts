@@ -137,7 +137,7 @@ export const friendLinks: FriendLink[] = [
 // 多组友站配置
 export const friendLinkGroups: FriendLinkGroup[] = [
   {
-    name: '默认组',
+    name: '友站',
     links: friendLinks,
   },
 ];
