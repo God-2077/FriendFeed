@@ -151,7 +151,7 @@ export default function ArticleList() {
       <div className="content-header">
         <h2>
           <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13.5 1.5L15 0h6l1.5 1.5v21L21 24h-6l-1.5-1.5v-21zM21 1.5h-6v21h6v-21zM0 4.5h12v3H0v-3zm0 6h12v3H0v-3zm0 6h12v3H0v-3z"/></svg>
-          {activeGroup.name} 最近更新
+          {activeGroup.name} · 最新动态
         </h2>
         <p className="feed-desc">{postsConfig.desc}</p>
         
