@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import type { FriendLink, AppData } from '@config/type';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import type { FriendLink, AppData, CrawlDelta } from '@config/type';
 import { friendLinkGroups as defaultGroups } from '@config/config';
 
 const STORAGE_KEY = 'friendfeed_data';
@@ -95,6 +95,14 @@ export function useFriendFeedStore() {
     setAppData({ groups: structuredClone(defaultGroups), activeGroupIndex: 0 });
   }, []);
 
+  const [crawlVersion, setCrawlVersion] = useState(0);
+  const deltaRef = useRef<CrawlDelta | null>(null);
+
+  const requestCrawl = useCallback((delta: CrawlDelta) => {
+    deltaRef.current = delta;
+    setCrawlVersion((v) => v + 1);
+  }, []);
+
   return {
     appData,
     activeGroup,
@@ -105,5 +113,8 @@ export function useFriendFeedStore() {
     addGroup,
     deleteGroup,
     resetToDefault,
+    crawlVersion,
+    deltaRef,
+    requestCrawl,
   };
 }

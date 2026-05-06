@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { RiExternalLinkLine } from '@remixicon/react';
-import type { PostItem } from '@config/type';
+import type { PostItem, CrawlDelta } from '@config/type';
 import type { CrawlStatus } from '@utils/crawler';
 import { postsConfig } from '@config/config';
 import { parseDate } from '@utils/utils';
@@ -19,14 +19,21 @@ interface FriendLinkStatus {
  * 在客户端加载 RSS 数据
  */
 export default function ArticleList() {
-  const { activeGroup } = useAppContext();
+  const store = useAppContext();
+  const { activeGroup, appData, crawlVersion, deltaRef } = store;
   const currentLinks = activeGroup.links;
   const [posts, setPosts] = useState<PostItem[]>([]);
+  const postsRef = useRef(posts);
+  useEffect(() => {
+    postsRef.current = posts;
+  }, [posts]);
   const [friendLinkStatuses, setFriendLinkStatuses] = useState<FriendLinkStatus[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedFriend, setSelectedFriend] = useState<string | null>(null);
   const [displayCount, setDisplayCount] = useState(postsConfig.maxCount);
   const groupRef = useRef(currentLinks);
+
+  const cacheRef = useRef<Map<number, PostItem[]>>(new Map());
 
   const totalCrawledCount = posts.length;
 
@@ -76,18 +83,39 @@ export default function ArticleList() {
     window.history.replaceState({}, '', newUrl.toString());
   }, [selectedFriend]);
 
+  const activeGroupIndex = appData.activeGroupIndex;
+  const groupsLen = appData.groups.length;
+
   useEffect(() => {
     const links = currentLinks;
     groupRef.current = links;
 
-    const fetchPosts = async () => {
-      if (links.length === 0) {
-        setPosts([]);
-        setFriendLinkStatuses([]);
-        setIsLoading(false);
-        return;
-      }
+    const cache = cacheRef.current;
+    const cachedPosts = cache.get(activeGroupIndex);
 
+    if (cachedPosts) {
+      setPosts(cachedPosts);
+      setFriendLinkStatuses(
+        links.map((fl) => ({
+          name: fl.name,
+          url: fl.url,
+          status: 'success' as CrawlStatus,
+        }))
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    if (links.length === 0) {
+      setPosts([]);
+      setFriendLinkStatuses([]);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+
+    const fetchPosts = async () => {
       const initialStatuses: FriendLinkStatus[] = links.map((fl) => ({
         name: fl.name,
         url: fl.url,
@@ -97,7 +125,7 @@ export default function ArticleList() {
 
       try {
         const { crawlFriendLink } = await import('../../utils/crawler');
-        
+
         const results = await Promise.all(
           links.map(friendLink => crawlFriendLink(friendLink))
         );
@@ -118,14 +146,16 @@ export default function ArticleList() {
           return dateB.getTime() - dateA.getTime();
         });
 
-        setPosts(allPosts);
-
         const updatedStatuses: FriendLinkStatus[] = links.map((fl, index) => ({
           name: fl.name,
           url: fl.url,
           status: results[index].status,
           error: results[index].error,
         }));
+
+        cache.set(activeGroupIndex, allPosts);
+
+        setPosts(allPosts);
         setFriendLinkStatuses(updatedStatuses);
       } catch (error) {
         if (groupRef.current !== links) return;
@@ -144,7 +174,87 @@ export default function ArticleList() {
     };
 
     fetchPosts();
-  }, [currentLinks]);
+  }, [activeGroupIndex, groupsLen]);
+
+  useEffect(() => {
+    const delta: CrawlDelta | null = deltaRef.current;
+    if (!delta) return;
+    deltaRef.current = null;
+
+    const { added, removed, edited } = delta;
+    if (added.length === 0 && removed.length === 0 && edited.length === 0) return;
+
+    setIsLoading(true);
+
+    const currentPosts = postsRef.current;
+
+    (async () => {
+      try {
+        const { crawlFriendLink } = await import('../../utils/crawler');
+
+        const editedNames = new Set(edited.map((l) => l.name));
+        const removedNames = new Set(removed);
+
+        let newPosts = currentPosts.filter(
+          (p) => !removedNames.has(p.friendLinkName ?? '') && !editedNames.has(p.friendLinkName ?? '')
+        );
+
+        const toCrawl = [...added, ...edited];
+        const results = await Promise.all(
+          toCrawl.map((link) => crawlFriendLink(link))
+        );
+
+        results.forEach((result) => {
+          newPosts = [...newPosts, ...result.posts];
+        });
+
+        newPosts.sort((a, b) => {
+          const dateA = parseDate(a.date);
+          const dateB = parseDate(b.date);
+          if (!dateA && !dateB) return 0;
+          if (!dateA) return 1;
+          if (!dateB) return -1;
+          return dateB.getTime() - dateA.getTime();
+        });
+
+        setPosts(newPosts);
+
+        setFriendLinkStatuses((prev) => {
+          let next = prev.filter((s) => !removed.includes(s.name));
+          edited.forEach((editedLink) => {
+            const idx = next.findIndex((s) => s.name === editedLink.name);
+            const target: FriendLinkStatus = { name: editedLink.name, url: editedLink.url, status: 'loading' };
+            if (idx >= 0) next[idx] = target;
+            else next.push(target);
+          });
+          added.forEach((addedLink) => {
+            if (!next.some((s) => s.name === addedLink.name)) {
+              next = [...next, { name: addedLink.name, url: addedLink.url, status: 'loading' }];
+            }
+          });
+          return next;
+        });
+
+        for (let i = 0; i < results.length; i++) {
+          const crawledLink = toCrawl[i];
+          const result = results[i];
+          setFriendLinkStatuses((prev) =>
+            prev.map((s) =>
+              s.name === crawledLink.name
+                ? { ...s, status: result.status, error: result.error }
+                : s
+            )
+          );
+        }
+
+        cacheRef.current.set(appData.activeGroupIndex, newPosts);
+      } catch {
+        // failed crawl is tracked per-link via friendLinkStatuses
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [crawlVersion]);
 
   return (
     <main className="feed-content">
@@ -205,7 +315,7 @@ export default function ArticleList() {
         )}
       </div>
       
-      {isLoading && posts.length === 0 && (
+      {isLoading && (
         <div className="loading-state">
           <svg className="spin" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 2a1 1 0 011 1v2a1 1 0 11-2 0V3a1 1 0 011-1zm0 16a1 1 0 011 1v2a1 1 0 11-2 0v-2a1 1 0 011-1zm-9-7a1 1 0 011-1h2a1 1 0 110 2H4a1 1 0 01-1-1zm16 0a1 1 0 011-1h2a1 1 0 110 2h-2a1 1 0 01-1-1zm-2.05-6.95a1 1 0 011.414 0l1.414 1.414a1 1 0 01-1.414 1.414L16.95 5.636a1 1 0 010-1.414zm-9.9 9.9a1 1 0 011.414 0l1.414 1.414a1 1 0 01-1.414 1.414L5.636 16.95a1 1 0 010-1.414zm9.9 0a1 1 0 011.414 0l1.414 1.414a1 1 0 01-1.414 1.414l-1.414-1.414a1 1 0 010-1.414zm-9.9-9.9a1 1 0 011.414 0l1.414 1.414a1 1 0 01-1.414 1.414L5.636 5.636a1 1 0 010-1.414z"/></svg>
           <p>正在加载文章...</p>

@@ -41,6 +41,12 @@ export interface SocialLink {
   label: string;
 }
 
+export interface CrawlDelta {
+  added: FriendLink[];
+  removed: string[];
+  edited: FriendLink[];
+}
+
 export interface PostItem {
   id: string;
   title: string;

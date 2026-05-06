@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import {
   RiAddLine,
   RiCloseLine,
@@ -8,7 +8,7 @@ import {
   RiFileCopyLine,
 } from '@remixicon/react';
 import { AppContext } from '../../context/AppContext';
-import type { FriendLink } from '@config/type';
+import type { FriendLink, CrawlDelta } from '@config/type';
 
 function emptyLink(): FriendLink {
   return { name: '', url: '', crawl: { url: '', type: 'rss' } };
@@ -26,34 +26,91 @@ export default function AdminPanel() {
     addGroup,
     deleteGroup,
     resetToDefault,
+    requestCrawl,
   } = store;
 
   const [visible, setVisible] = useState(false);
+  const visibleRef = useRef(false);
+  visibleRef.current = visible;
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<FriendLink>(emptyLink());
   const [newGroupName, setNewGroupName] = useState('');
 
+  const linksBeforeRef = useRef<FriendLink[]>([]);
+  const groupIndexBeforeRef = useRef(-1);
+
+  useEffect(() => {
+    if (visible) {
+      linksBeforeRef.current = activeGroup.links.map((l) => ({ ...l }));
+      groupIndexBeforeRef.current = appData.activeGroupIndex;
+    }
+  }, [visible]);
+
+  const closePanelRef = useRef<() => void>(() => {});
+
+  useEffect(() => {
+    closePanelRef.current = () => {
+      const current = activeGroup.links;
+      const before = linksBeforeRef.current;
+
+      if (groupIndexBeforeRef.current !== appData.activeGroupIndex) {
+        setVisible(false);
+        return;
+      }
+
+      const removed = before
+        .filter((b) => !current.some((l) => l.url === b.url))
+        .map((b) => b.name);
+
+      const added = current.filter(
+        (l) => !before.some((b) => b.url === l.url)
+      );
+
+      const edited = current.filter((l) => {
+        const old = before.find((b) => b.url === l.url);
+        return old && (old.name !== l.name || old.crawl.url !== l.crawl.url);
+      });
+
+      if (added.length > 0 || removed.length > 0 || edited.length > 0) {
+        const delta: CrawlDelta = { added, removed, edited };
+        requestCrawl(delta);
+      }
+
+      setVisible(false);
+    };
+  });
+
+  const closePanel = useCallback(() => closePanelRef.current(), []);
+
   useEffect(() => {
     const handleDblClick = (e: MouseEvent) => {
       if ((e.target as HTMLElement).closest('.site-title')) {
-        setVisible((v) => !v);
+        if (visibleRef.current) {
+          closePanel();
+        } else {
+          setVisible(true);
+        }
       }
     };
     document.addEventListener('dblclick', handleDblClick);
     return () => document.removeEventListener('dblclick', handleDblClick);
-  }, []);
+  }, [closePanel]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'K') {
         e.preventDefault();
-        setVisible((v) => !v);
+        if (visibleRef.current) {
+          closePanel();
+        } else {
+          setVisible(true);
+        }
       }
     };
     window.addEventListener('keydown', handleKey);
     return () => window.removeEventListener('keydown', handleKey);
-  }, []);
+  }, [closePanel]);
 
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
@@ -61,13 +118,13 @@ export default function AdminPanel() {
         if (showLinkModal) {
           setShowLinkModal(false);
         } else {
-          setVisible(false);
+          closePanel();
         }
       }
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
-  }, [showLinkModal]);
+  }, [showLinkModal, closePanel]);
 
   const startAdd = () => {
     setEditForm(emptyLink());
@@ -146,11 +203,11 @@ export const friendLinkGroups: FriendLinkGroup[] = [
   if (!visible) return null;
 
   return (
-    <div className="admin-overlay" onClick={() => { setVisible(false); }}>
+    <div className="admin-overlay" onClick={closePanel}>
       <div className="admin-panel" onClick={(e) => e.stopPropagation()}>
         <div className="admin-panel-header">
           <h2 className="admin-title">友站管理</h2>
-          <button className="admin-btn admin-btn-close" onClick={() => { setVisible(false); }}>
+          <button className="admin-btn admin-btn-close" onClick={closePanel}>
             <RiCloseLine size={18} />
           </button>
         </div>
