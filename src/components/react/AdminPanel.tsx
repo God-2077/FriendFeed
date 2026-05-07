@@ -44,6 +44,11 @@ export default function AdminPanel() {
     if (visible) {
       linksBeforeRef.current = activeGroup.links.map((l) => ({ ...l }));
       groupIndexBeforeRef.current = appData.activeGroupIndex;
+      const prevOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevOverflow;
+      };
     }
   }, [visible]);
 

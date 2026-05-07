@@ -51,6 +51,7 @@ export interface PostItem {
   id: string;
   title: string;
   content: string;
+  contentHtml?: string;
   date: string;
   path: string;
   category?: string;

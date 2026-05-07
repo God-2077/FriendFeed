@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import type { PostItem } from '@config/type';
 import { truncateText, parseDate } from '@utils/utils';
 import config from '@config/config';
+import ReaderModal from './ReaderModal';
 
 interface ArticleCardProps {
   post: PostItem;
@@ -26,13 +28,20 @@ const formatDate = (dateStr: string): string => {
  */
 export default function ArticleCard({ post }: ArticleCardProps) {
   const summary = truncateText(post.content, config.posts.summaryLength);
-  
-  return (
+  const [readerOpen, setReaderOpen] = useState(false);
+
+  const handleTitleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setReaderOpen(true);
+  };
+   
+   return (
+    <>
     <article className="post-card">
       <div className="card-glow" />
       <div className="post-content">
         <h3 className="post-title">
-          <a target="_blank" rel="noopener noreferrer" href={post.path}>
+          <a target="_blank" rel="noopener noreferrer" href={post.path} onClick={handleTitleClick}>
             {post.title}
           </a>
         </h3>
@@ -70,9 +79,11 @@ export default function ArticleCard({ post }: ArticleCardProps) {
       </div>
       <div className="post-footer">
         <a className="read-more" target="_blank" rel="noopener noreferrer" href={post.path}>
-          阅读全文 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
+          跳转原文 <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M13.172 12l-4.95-4.95 1.414-1.414L16 12l-6.364 6.364-1.414-1.414z"/></svg>
         </a>
       </div>
     </article>
+    <ReaderModal post={readerOpen ? post : null} onClose={() => setReaderOpen(false)} />
+    </>
   );
 }

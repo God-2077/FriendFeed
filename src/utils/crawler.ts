@@ -3,6 +3,7 @@ import { parseDate } from '@utils/utils';
 import { crawlConfig } from '@config/config';
 import type { FriendLink, PostItem } from '@config/type';
 import axios from 'axios';
+import sanitizeHtml from 'sanitize-html';
 
 /**
  * 友站爬取相关类型定义
@@ -13,6 +14,38 @@ export interface CrawlResult {
   posts: PostItem[];
   status: CrawlStatus;
   error?: string;
+}
+
+const sanitizeHtmlOptions: sanitizeHtml.IOptions = {
+  allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+    'img', 'figure', 'figcaption', 'video', 'source',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    'del', 'sub', 'sup', 'hr', 'span', 'div', 'pre', 'code',
+  ]),
+  allowedAttributes: {
+    a: ['href', 'title', 'target', 'rel'],
+    img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+    video: ['src', 'controls', 'width', 'height'],
+    source: ['src', 'type'],
+    td: ['colspan', 'rowspan'],
+    th: ['colspan', 'rowspan'],
+  },
+  allowedSchemes: ['http', 'https', 'mailto'],
+  ...(crawlConfig.proxyImages ? {
+    transformTags: {
+      img: (tagName: string, attribs: Record<string, string>) => {
+        if (attribs.src && !attribs.src.startsWith('data:')) {
+          attribs.src = crawlConfig.crosAPI.replace('{url}', encodeURIComponent(attribs.src));
+        }
+        return { tagName, attribs };
+      },
+    },
+  } : {}),
+};
+
+function sanitizeContent(html: string): string {
+  if (!html) return '';
+  return sanitizeHtml(html, sanitizeHtmlOptions);
 }
 
 /**
@@ -136,65 +169,66 @@ async function fetchWithCros(url: string): Promise<string> {
 function parseRss(xml: string): PostItem[] {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xml, 'text/xml');
-  
+
   const posts: PostItem[] = [];
-  
-  // 检查是否是 Atom 格式
+
   const isAtom = doc.querySelector('feed') !== null;
-  const isRss1 = doc.querySelector('rdf\\:RDF, RDF') !== null;
-  
+
   if (isAtom) {
-    // 处理 Atom 格式
     const entries = doc.querySelectorAll('entry');
-    
+
     entries.forEach((entry, index) => {
       const title = entry.querySelector('title')?.textContent?.trim() || '';
       const link = getAtomLink(entry);
-      const content = getAtomContent(entry);
+      const fullContentHtml = getAtomElementHtml(entry, 'content');
+      const summaryHtml = getAtomElementHtml(entry, 'summary') || fullContentHtml;
       const pubDate = entry.querySelector('published, updated')?.textContent?.trim() || '';
       const categoryNodes = entry.querySelectorAll('category');
       const tags = Array.from(categoryNodes)
         .map(c => c.getAttribute('term') || c.textContent?.trim())
         .filter((t): t is string => !!t);
 
-      // 提取纯文本内容作为摘要
+      // 从摘要提取纯文本用于卡片展示
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = content;
+      tempDiv.innerHTML = summaryHtml;
       const plainContent = tempDiv.textContent || tempDiv.innerText || '';
 
       posts.push({
         id: `atom-${index}-${Date.now()}`,
         title,
         content: plainContent,
+        contentHtml: sanitizeContent(fullContentHtml),
         date: pubDate,
         path: link,
         tags: tags.length > 0 ? tags : undefined,
       });
     });
-    
-  } else if (isRss1) {
-    // 处理 RSS 1.0 (RDF) 格式
+
+  } else {
+    // RSS 2.0 / RSS 1.0 (RDF) 统一处理
     const items = doc.querySelectorAll('item');
-    
+
     items.forEach((item, index) => {
       const title = item.querySelector('title')?.textContent?.trim() || '';
-      
+
       // RSS 1.0 的 link 可能在 rdf:about 属性中
       let link = item.querySelector('link')?.textContent?.trim() || '';
       if (!link) {
         link = item.getAttribute('rdf:about') || item.getAttribute('about') || '';
       }
-      
-      const description = item.querySelector('description')?.textContent?.trim() 
-        || item.querySelector('content\\:encoded')?.textContent?.trim()
+
+      const fullContentHtml = getContentEncodedHtml(item)
+        || item.querySelector('description')?.textContent?.trim()
         || '';
-      const pubDate = item.querySelector('dc\\:date, date, pubDate')?.textContent?.trim() || '';
-      
-      // RSS 1.0 的 category 可能在 dc:subject 中
+      const summaryHtml = item.querySelector('description')?.textContent?.trim()
+        || fullContentHtml;
+
+      const pubDate = item.querySelector('pubDate, dc\\:date, date')?.textContent?.trim() || '';
+
+      // 提取标签
+      const tags: string[] = [];
       const subjectNodes = item.querySelectorAll('dc\\:subject');
       const categoryNodes = item.querySelectorAll('category');
-      
-      const tags: string[] = [];
       subjectNodes.forEach(s => {
         const text = s.textContent?.trim();
         if (text) tags.push(text);
@@ -204,44 +238,18 @@ function parseRss(xml: string): PostItem[] {
         if (text) tags.push(text);
       });
 
+      // 从摘要提取纯文本用于卡片展示
       const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = description;
+      tempDiv.innerHTML = summaryHtml;
       const plainContent = tempDiv.textContent || tempDiv.innerText || '';
 
-      posts.push({
-        id: `rss1-${index}-${Date.now()}`,
-        title,
-        content: plainContent,
-        date: pubDate,
-        path: link,
-        tags: tags.length > 0 ? tags : undefined,
-      });
-    });
-    
-  } else {
-    // 处理 RSS 2.0 格式
-    const items = doc.querySelectorAll('item');
-    
-    items.forEach((item, index) => {
-      const title = item.querySelector('title')?.textContent?.trim() || '';
-      const link = item.querySelector('link')?.textContent?.trim() || '';
-      const description = item.querySelector('description')?.textContent?.trim() 
-        || item.querySelector('content\\:encoded')?.textContent?.trim()
-        || '';
-      const pubDate = item.querySelector('pubDate, dc\\:date')?.textContent?.trim() || '';
-      const categoryNodes = item.querySelectorAll('category');
-      const tags = Array.from(categoryNodes)
-        .map(c => c.textContent?.trim())
-        .filter((t): t is string => !!t);
-
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = description;
-      const plainContent = tempDiv.textContent || tempDiv.innerText || '';
+      const prefix = doc.querySelector('rdf\\:RDF, RDF') ? 'rss1' : 'rss2';
 
       posts.push({
-        id: `rss2-${index}-${Date.now()}`,
+        id: `${prefix}-${index}-${Date.now()}`,
         title,
         content: plainContent,
+        contentHtml: sanitizeContent(fullContentHtml),
         date: pubDate,
         path: link,
         tags: tags.length > 0 ? tags : undefined,
@@ -253,43 +261,39 @@ function parseRss(xml: string): PostItem[] {
 }
 
 /**
- * 获取 Atom 格式的链接
+ * 获取 Atom 元素的内容 (content 或 summary)
+ * 对于 type="html"/"xhtml" 的子节点会被序列化为 HTML 字符串
+ * 对于 type="text" 或无 type 属性返回 textContent
  */
-function getAtomLink(entry: Element): string {
-  // Atom 的 link 元素可能有 href 属性
-  const linkEl = entry.querySelector('link');
-  if (linkEl) {
-    const href = linkEl.getAttribute('href');
-    if (href) {
-      return href;
+function getAtomElementHtml(entry: Element, tagName: string): string {
+  const el = entry.querySelector(tagName);
+  if (!el) return '';
+
+  const type = el.getAttribute('type') || 'text';
+
+  if (type === 'html' || type === 'xhtml') {
+    // 将 XML 子节点克隆到 HTML div 中以获得正确的 HTML 字符串
+    if (el.childNodes.length === 0) return '';
+    const container = document.createElement('div');
+    for (const child of Array.from(el.childNodes)) {
+      container.appendChild(child.cloneNode(true));
     }
+    return container.innerHTML;
   }
-  
-  // 如果没有 href 属性，尝试获取文本内容
-  return linkEl?.textContent?.trim() || '';
+
+  return el.textContent?.trim() || '';
 }
 
 /**
- * 获取 Atom 格式的内容
+ * 获取 RSS content:encoded 元素的内容 (通过 localName 查找以兼容命名空间)
  */
-function getAtomContent(entry: Element): string {
-  // 优先尝试获取 content
-  const contentEl = entry.querySelector('content');
-  if (contentEl) {
-    const type = contentEl.getAttribute('type');
-    if (type === 'html' || type === 'xhtml') {
-      return contentEl.textContent?.trim() || '';
-    } else if (type === 'text') {
-      return contentEl.textContent?.trim() || '';
-    } else {
-      // 默认处理为文本
-      return contentEl.textContent?.trim() || '';
+function getContentEncodedHtml(item: Element): string {
+  for (const child of Array.from(item.children)) {
+    if (child.localName === 'encoded') {
+      return child.textContent?.trim() || '';
     }
   }
-  
-  // 如果没有 content，尝试获取 summary
-  const summary = entry.querySelector('summary')?.textContent?.trim() || '';
-  return summary;
+  return '';
 }
 
 interface HtmlCrawlConfig {

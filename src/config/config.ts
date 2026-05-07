@@ -145,7 +145,8 @@ export const friendLinkGroups: FriendLinkGroup[] = [
 // 爬虫配置
 export const crawlConfig = {
   crosAPI: 'https://cros-api.rowwus.eu.org/?{url}',
-  timeout:8000, // 超时时间，单位毫秒
+  timeout: 8000, // 超时时间，单位毫秒
+  proxyImages: true, // 是否将阅读器中的图片通过 crosAPI 代理加载
 };
 
 
