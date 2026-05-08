@@ -62,3 +62,38 @@ ESLint config at `eslint.config.js` enforces:
 ## What's Missing
 
 - No test framework in package.json
+
+## Git Commit Conventions
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/). Format:
+
+```
+
+<type>[optional scope]: <description>
+
+[optional body]
+
+[optional footer]
+
+```
+
+### Types
+
+| Type | Description |
+|------|-------------|
+| `feat` | A new feature |
+| `fix` | A bug fix |
+| `docs` | Documentation only changes |
+| `style` | Changes that do not affect meaning (white-space, formatting, etc.) |
+| `refactor` | Code change that is neither a fix nor a feature |
+| `perf` | A code change that improves performance |
+| `test` | Adding or correcting tests |
+| `chore` | Changes to the build process or auxiliary tools |
+| `ci` | Changes to CI/CD configuration |
+| `build` | Changes to build system or external dependencies |
+
+### Rules
+
+- Write commit messages in **Chinese**, no trailing period.
+- Keep lines to 72 characters or fewer (body and footer).
+- Run `pnpm lint` before committing to ensure the code passes lint checks.
