@@ -261,6 +261,28 @@ function parseRss(xml: string): PostItem[] {
 }
 
 /**
+ * 获取 Atom entry 的链接地址
+ * Atom link 元素格式: <link rel="alternate" type="text/html" href="..."/>
+ */
+function getAtomLink(entry: Element): string {
+  const links = entry.querySelectorAll('link');
+  for (const link of Array.from(links)) {
+    const rel = link.getAttribute('rel');
+    // 优先取 rel="alternate" 的链接, 否则取第一个有 href 的 link
+    if (rel === 'alternate' || !rel) {
+      const href = link.getAttribute('href');
+      if (href) return href;
+    }
+  }
+  // fallback: 取第一个有 href 的 link
+  for (const link of Array.from(links)) {
+    const href = link.getAttribute('href');
+    if (href) return href;
+  }
+  return '';
+}
+
+/**
  * 获取 Atom 元素的内容 (content 或 summary)
  * 对于 type="html"/"xhtml" 的子节点会被序列化为 HTML 字符串
  * 对于 type="text" 或无 type 属性返回 textContent
