@@ -131,6 +131,14 @@ export const friendLinks: FriendLink[] = [
       url: "https://b.oxue.de/rss.xml",
       type: "rss"
     }
+  },
+  {
+    name: "他说",
+    url: "https://090909.top/",
+    crawl: {
+      url: "https://090909.top/atom.xml",
+      type: "rss"
+    }
   }
 ];
 
