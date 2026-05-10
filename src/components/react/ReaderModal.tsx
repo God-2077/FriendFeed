@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { RiCloseLine, RiExternalLinkLine } from '@remixicon/react';
 import type { PostItem } from '@config/type';
 import { parseDate } from '@utils/utils';
@@ -21,6 +21,8 @@ const formatDate = (dateStr: string): string => {
 };
 
 export default function ReaderModal({ post, onClose }: ReaderModalProps) {
+  const contentRef = useRef<HTMLDivElement>(null);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -43,6 +45,58 @@ export default function ReaderModal({ post, onClose }: ReaderModalProps) {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, [post, handleKeyDown]);
+
+  useEffect(() => {
+    if (!post || !contentRef.current) return;
+
+    const root = contentRef.current;
+
+    const imgs = root.querySelectorAll<HTMLImageElement>('img:not([data-lqip])');
+
+    imgs.forEach((img) => {
+      img.dataset.lqip = 'true';
+
+      const parent = img.parentNode;
+      const parentEl = parent instanceof Element ? parent : null;
+
+      if (parentEl?.closest('figure')) return;
+      if (img.width && img.width < 40) return;
+      if (img.height && img.height < 40) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'lqip-wrapper';
+      parent?.insertBefore(wrapper, img);
+      wrapper.appendChild(img);
+
+      if (img.complete) {
+        img.style.opacity = '1';
+      } else {
+        img.addEventListener('load', () => { img.style.opacity = '1'; }, { once: true });
+        img.addEventListener('error', () => {
+          wrapper.classList.add('lqip-error');
+        }, { once: true });
+      }
+    });
+
+    const figures = root.querySelectorAll<HTMLElement>('figure:not([data-lqip])');
+    figures.forEach((fig) => {
+      const img = fig.querySelector<HTMLImageElement>('img');
+      if (!img) return;
+      fig.dataset.lqip = 'true';
+      fig.classList.add('lqip-figure');
+
+      if (img.complete) {
+        img.style.opacity = '1';
+      } else {
+        img.style.opacity = '0';
+        img.style.transition = 'opacity 0.4s ease';
+        img.addEventListener('load', () => { img.style.opacity = '1'; }, { once: true });
+        img.addEventListener('error', () => {
+          fig.classList.add('lqip-error');
+        }, { once: true });
+      }
+    });
+  }, [post]);
 
   if (!post) return null;
 
@@ -86,7 +140,7 @@ export default function ReaderModal({ post, onClose }: ReaderModalProps) {
           )}
         </div>
 
-        <div className="reader-content">
+        <div className="reader-content" ref={contentRef}>
           {post.contentHtml ? (
             <div dangerouslySetInnerHTML={{ __html: post.contentHtml }} />
           ) : (
