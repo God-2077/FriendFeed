@@ -48,6 +48,11 @@ function sanitizeContent(html: string): string {
   return sanitizeHtml(html, sanitizeHtmlOptions);
 }
 
+function stripHtml(html: string): string {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, '').trim();
+}
+
 /**
  * 爬取单个友站文章
  */
@@ -189,9 +194,7 @@ function parseRss(xml: string): PostItem[] {
         .filter((t): t is string => !!t);
 
       // 从摘要提取纯文本用于卡片展示
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = summaryHtml;
-      const plainContent = tempDiv.textContent || tempDiv.innerText || '';
+      const plainContent = stripHtml(summaryHtml);
 
       posts.push({
         id: `atom-${index}-${Date.now()}`,
@@ -239,9 +242,7 @@ function parseRss(xml: string): PostItem[] {
       });
 
       // 从摘要提取纯文本用于卡片展示
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = summaryHtml;
-      const plainContent = tempDiv.textContent || tempDiv.innerText || '';
+      const plainContent = stripHtml(summaryHtml);
 
       const prefix = doc.querySelector('rdf\\:RDF, RDF') ? 'rss1' : 'rss2';
 
