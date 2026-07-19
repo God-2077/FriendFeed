@@ -142,11 +142,34 @@ export const friendLinks: FriendLink[] = [
   }
 ];
 
+// 关注的博客
+export const followedBlogs: FriendLink[] = [
+    {
+        name: "ACEVS",
+        url: "https://acevs.com/",
+        crawl: {
+            url: "https://acevs.com/feed/",
+            type: "rss"
+        }
+    },{
+        name: "全局变量",
+        url: "https://ilogs.cn/",
+        crawl: {
+            url: "https://ilogs.cn/feed/",
+            type: "rss"
+        }
+    },
+];
+
 // 多组友站配置
 export const friendLinkGroups: FriendLinkGroup[] = [
   {
     name: '友站',
     links: friendLinks,
+  },
+  {
+    name: '关注的博客',
+    links: followedBlogs,
   },
 ];
 
