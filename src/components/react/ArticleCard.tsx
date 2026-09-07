@@ -42,7 +42,7 @@ export default function ArticleCard({ post }: ArticleCardProps) {
       <div className="post-content">
         <h3 className="post-title">
           <a target="_blank" rel="noopener noreferrer" href={post.path} onClick={handleTitleClick}>
-            {post.title}
+            {post.title || '无标题'}
           </a>
         </h3>
         <div className="post-meta">

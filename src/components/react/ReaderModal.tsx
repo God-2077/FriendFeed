@@ -113,7 +113,7 @@ export default function ReaderModal({ post, onClose }: ReaderModalProps) {
         <div className="reader-glow" />
 
         <div className="reader-header">
-          <h2 className="reader-title">{post.title}</h2>
+          <h2 className="reader-title">{post.title || '无标题'}</h2>
           <button className="reader-close-btn" onClick={onClose} aria-label="关闭">
             <RiCloseLine size={20} />
           </button>
