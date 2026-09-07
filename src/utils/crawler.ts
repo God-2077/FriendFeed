@@ -39,6 +39,13 @@ const sanitizeHtmlOptions: sanitizeHtml.IOptions = {
         }
         return { tagName, attribs };
       },
+      // 处理视频源
+      source: (tagName: string, attribs: Record<string, string>) => {
+        if ( attribs.type && attribs.src && attribs.type.startsWith('video/')) {
+          attribs.src = crawlConfig.crosAPI.replace('{url}', encodeURIComponent(attribs.src));
+        }
+        return { tagName, attribs };
+      },
     },
   } : {}),
 };
